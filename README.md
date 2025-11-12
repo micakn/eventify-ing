@@ -4,7 +4,7 @@
 
 **✅ El sistema está desplegado y disponible en:**
 
-🔗 **URL de Producción**: [https://eventify-e7el24f8e-micaela-knass-projects.vercel.app](https://eventify-e7el24f8e-micaela-knass-projects.vercel.app)
+🔗 **URL de Producción**: [https://eventify-ifptvcdrr-micaela-knass-projects.vercel.app](eventify-ifptvcdrr-micaela-knass-projects.vercel.app)
 
 ---
 
