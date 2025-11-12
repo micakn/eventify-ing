@@ -193,20 +193,8 @@ app.use((req, res) => {
 // -------------------- Middleware de manejo de errores (debe ir al final) --------------------
 app.use(errorHandler);
 
-// Exportar la aplicación para uso en tests
+// Exportar la aplicación para uso en tests y Vercel
+// NOTA: El servidor se inicia a través de:
+// - server.js en producción local (npm start)
+// - api/index.js en Vercel
 export default app;
-
-// Iniciar servidor SOLO si se ejecuta directamente (no en tests)
-if (process.env.NODE_ENV !== 'test') {
-  // Iniciar servidor SOLO tras conectar a Mongo
-  connectMongo(process.env.MONGODB_URI)
-    .then(() => {
-      app.listen(PORT, () => {
-        console.log(`Servidor corriendo en http://localhost:${PORT}`);
-      });
-    })
-    .catch((err) => {
-      console.error('❌ Error conectando a Mongo:', err);
-      process.exit(1);
-    });
-}
