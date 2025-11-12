@@ -54,7 +54,8 @@ export async function connectMongo(uri) {
     console.error('❌ Error al conectar con MongoDB:', e.message);
     // En entornos serverless (Vercel), no hacer process.exit
     // Permitir que se reintente en la próxima invocación
-    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
+    if (process.env.NODE_ENV !== 'production' || !isVercel) {
       process.exit(1);
     }
     throw e;

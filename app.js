@@ -32,7 +32,12 @@ import TareaModel from './models/TareaModel.js';
 import { connectMongo } from './db/mongoose.js';
 
 // -------------------- Configuración --------------------
-dotenv.config(); // Cargar variables de entorno
+// Solo cargar dotenv si no estamos en Vercel (donde las variables ya están disponibles)
+// Vercel establece VERCEL=1 o VERCEL_ENV
+const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
+if (!isVercel) {
+  dotenv.config();
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,22 +52,33 @@ app.use(express.urlencoded({ extended: true })); // Formularios
 app.use(methodOverride('_method')); // Permite usar DELETE/PUT desde formularios
 
 // -------------------- Configuración de Sesiones --------------------
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'tu-session-secret-cambiar-en-produccion',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
+// Configurar sesiones con MongoStore solo si MONGODB_URI está disponible
+// En serverless, usar sesiones en memoria como fallback
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'tu-session-secret-cambiar-en-produccion',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+    httpOnly: true,
+    maxAge: 14 * 24 * 60 * 60 * 1000 // 14 días
+  }
+};
+
+// Solo usar MongoStore si MONGODB_URI está disponible
+if (process.env.MONGODB_URI) {
+  try {
+    sessionConfig.store = MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       ttl: 14 * 24 * 60 * 60 // 14 días
-    }),
-    cookie: {
-      secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
-      httpOnly: true,
-      maxAge: 14 * 24 * 60 * 60 * 1000 // 14 días
-    }
-  })
-);
+    });
+  } catch (error) {
+    console.warn('⚠️  No se pudo crear MongoStore, usando sesiones en memoria:', error.message);
+    // Continuar sin store (sesiones en memoria)
+  }
+}
+
+app.use(session(sessionConfig));
 
 // -------------------- Inicializar Passport --------------------
 app.use(passport.initialize());
