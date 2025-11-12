@@ -30,6 +30,7 @@ import TareaModel from './models/TareaModel.js';
 
 // Conexión a Mongo
 import { connectMongo } from './db/mongoose.js';
+import mongoose from 'mongoose';
 
 // -------------------- Configuración --------------------
 // Solo cargar dotenv si no estamos en Vercel (donde las variables ya están disponibles)
@@ -99,6 +100,25 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // -------------------- Rutas --------------------
+
+// Health check endpoint (útil para debugging en Vercel)
+app.get('/health', (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    vercel: !!(process.env.VERCEL || process.env.VERCEL_ENV),
+    mongodb: {
+      configured: !!process.env.MONGODB_URI,
+      connected: mongoose.connection.readyState === 1
+    },
+    variables: {
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasSessionSecret: !!process.env.SESSION_SECRET
+    }
+  };
+  res.status(200).json(health);
+});
 
 // Ruta principal
 app.get('/', async (req, res) => {

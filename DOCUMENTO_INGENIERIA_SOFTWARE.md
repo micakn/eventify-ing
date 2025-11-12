@@ -136,6 +136,17 @@ Nuestra propuesta es desarrollar un **sistema ERP a medida** para Eventify, que 
 
 ### Módulos Principales del ERP
 
+Los módulos del ERP están **completamente integrados** entre sí, permitiendo que la información fluya automáticamente de un módulo a otro. Por ejemplo:
+
+- **Cotizaciones → Facturación**: Las cotizaciones aprobadas se pueden convertir automáticamente en facturas.
+- **Cotizaciones → Gastos**: Los items de cotización se vinculan con gastos reales para conciliación.
+- **Eventos → Invitados**: Los eventos se vinculan automáticamente con invitados e invitaciones.
+- **Eventos → Cronograma**: Los eventos incluyen automáticamente su cronograma de hitos y tareas.
+- **Gastos → Facturación**: Los gastos se agrupan automáticamente para generar facturas.
+- **Todos → Auditoría**: Todas las acciones en cualquier módulo se registran automáticamente en auditoría.
+
+Esta integración permite que Eventify tenga una **visión completa y en tiempo real** de cada evento desde su inicio hasta su cierre contable.
+
 #### 1. Módulo de Cotizaciones y Proveedores (RF1)
 
 - **Gestión de proveedores**: Base de datos centralizada de proveedores con historial de precios y desempeño.
@@ -304,54 +315,71 @@ Dentro del equipo contamos con:
 - Definición de casos de uso.
 - Diseño de la arquitectura del sistema.
 - Creación de prototipos en Figma.
+- **Configuración del entorno de desarrollo**.
+- **Desarrollo del módulo de autenticación básico** (para mostrar progreso temprano).
 
 **Entregables**:
 - Documento de requerimientos.
 - Prototipos de interfaz de usuario.
 - Arquitectura del sistema.
 - Plan de proyecto.
+- **Sistema de autenticación funcional** (login/logout básico).
+- **Primera versión del entorno de desarrollo** configurado.
 
-**Sprint 1-2**: Análisis y diseño.
+**Sprint 1-2**: Análisis, diseño y desarrollo inicial.
+
+**Nota**: Al final del mes 1, Eventify verá un sistema funcional básico (autenticación) para validar que vamos por el camino correcto, no solo documentación y prototipos.
 
 ### Fase 2: Desarrollo Iterativo - Módulo Base (Meses 2-3)
 
 **Objetivo**: Desarrollar la base del sistema y los módulos críticos (Cotizaciones e Invitados).
 
 **Actividades**:
-- Configuración del entorno de desarrollo.
-- Desarrollo del módulo de autenticación y autorización.
+- Desarrollo del módulo de autenticación y autorización completo (roles y permisos).
 - Desarrollo del módulo de cotizaciones y proveedores (RF1).
-- Desarrollo del módulo de invitados y acreditación (RF2).
+- Desarrollo del módulo de invitados y acreditación (RF2) - versión MVP.
 - Desarrollo de la interfaz de usuario básica.
 - Pruebas unitarias y de integración.
+- **Implementación de backups automáticos**.
+- **Configuración de monitoreo básico**.
 
 **Entregables**:
-- Sistema base funcional.
-- Módulo de cotizaciones operativo.
-- Módulo de invitados operativo.
+- Sistema base funcional con autenticación completa.
+- Módulo de cotizaciones operativo (MVP).
+- Módulo de invitados operativo (MVP - funcionalidades básicas).
 - Primera versión de la interfaz de usuario.
+- **Sistema de backups configurado**.
+- **Monitoreo básico implementado**.
 
 **Sprint 3-6**: Desarrollo de módulos base.
 
+**Nota**: Al final del mes 3, Eventify tendrá un MVP funcional con los módulos críticos operativos, permitiendo comenzar a usar el sistema en producción con funcionalidades básicas.
+
 ### Fase 3: Desarrollo Iterativo - Módulos Avanzados (Meses 4-5)
 
-**Objetivo**: Completar los módulos restantes (Cronograma y Facturación).
+**Objetivo**: Completar los módulos restantes (Cronograma y Facturación) y mejorar los módulos base.
 
 **Actividades**:
 - Desarrollo del módulo de cronograma y responsables (RF3).
-- Desarrollo del módulo de facturación y cierre contable (RF4).
+- Desarrollo del módulo de facturación y cierre contable (RF4) - versión MVP.
 - Desarrollo del módulo de auditoría (RNF4).
+- **Mejoras y optimizaciones** de los módulos base (Cotizaciones e Invitados).
 - Integración de todos los módulos.
 - Mejoras en la interfaz de usuario.
 - Pruebas de integración y sistema.
+- **Implementación completa de seguridad** (backups, monitoreo, alertas).
 
 **Entregables**:
-- Todos los módulos funcionales.
+- Todos los módulos funcionales (versión MVP completa).
 - Sistema integrado completo.
 - Interfaz de usuario completa.
 - Sistema de auditoría operativo.
+- **Sistema de seguridad completo** (backups, monitoreo, alertas).
+- **Optimizaciones de rendimiento** implementadas.
 
 **Sprint 7-10**: Desarrollo de módulos avanzados.
+
+**Nota**: Al final del mes 5, Eventify tendrá un sistema completo con todos los módulos integrados, aunque algunas funcionalidades avanzadas pueden estar en versión MVP y mejorarse en fases posteriores.
 
 ### Fase 4: Pruebas y Validación (Mes 6 - Primera mitad)
 
@@ -394,9 +422,21 @@ Dentro del equipo contamos con:
 
 ### Hitos Principales
 
-- **Hito 1 (Mes 3)**: MVP funcional con módulos de Cotizaciones e Invitados.
-- **Hito 2 (Mes 5)**: Sistema completo con todos los módulos integrados.
-- **Hito 3 (Mes 6)**: Sistema en producción con personal capacitado.
+- **Hito 1 (Mes 1)**: Sistema de autenticación funcional y prototipos validados.
+- **Hito 2 (Mes 3)**: MVP funcional con módulos de Cotizaciones e Invitados operativos.
+- **Hito 3 (Mes 5)**: Sistema completo con todos los módulos integrados (versión MVP).
+- **Hito 4 (Mes 6)**: Sistema en producción con personal capacitado y soporte inicial.
+
+### Consideraciones sobre Tiempos
+
+**Importante**: Los tiempos estimados son **realistas pero ajustados**. Es importante tener en cuenta que:
+
+- **Metodología ágil**: Permite ajustar prioridades y tiempos según feedback del cliente.
+- **MVP primero**: Nos enfocamos en entregar un MVP funcional que pueda usarse en producción, luego mejoramos y agregamos funcionalidades avanzadas.
+- **Iteraciones**: El sistema se mejora continuamente en iteraciones posteriores.
+- **Flexibilidad**: Si algún módulo requiere más tiempo, podemos ajustar el cronograma y priorizar funcionalidades críticas.
+
+**Nota**: Un ERP completo típicamente requiere 12-18 meses de desarrollo. Nuestro enfoque de 6 meses permite entregar un MVP funcional que cubre las necesidades críticas de Eventify, con la posibilidad de expandir y mejorar en fases posteriores.
 
 ---
 
@@ -407,10 +447,9 @@ Dentro del equipo contamos con:
 #### Desarrollo Técnico
 
 - **Node.js**: Entorno de ejecución para JavaScript.
-- **Express**: Framework web minimalista para Node.js.
+- **Express**: Framework web para desarrollo del backend.
 - **MongoDB Atlas**: Base de datos NoSQL en la nube.
 - **Mongoose**: ODM (Object Document Mapper) para MongoDB.
-- **Pug**: Motor de plantillas para vistas web.
 - **JavaScript (ES6+)**: Lenguaje de programación principal.
 
 #### Herramientas de Diseño y Documentación
@@ -464,7 +503,7 @@ El sistema utiliza una arquitectura **MVC (Model-View-Controller)** con las sigu
 
 #### Capa de Presentación
 
-- **Vistas Web (Pug)**: Interfaz de usuario para administradores y usuarios internos.
+- **Interfaz Web**: Interfaz de usuario para administradores y usuarios internos.
 - **API REST (JSON)**: API para integraciones externas y aplicaciones móviles.
 - **RSVP Público**: Interfaz pública para que invitados confirmen asistencia.
 
@@ -704,6 +743,11 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - ✅ Bloqueo temporal (30 minutos).
 - ✅ Recuperación de contraseña (estructura lista).
 - ✅ Registro de accesos en auditoría.
+- ✅ **Encriptación de datos** (HTTPS/TLS en tránsito, AES-256 en reposo).
+- ✅ **Autenticación de dos factores (2FA)** disponible.
+- ✅ **Política de contraseñas robusta** (mínimo 8 caracteres, mayúsculas, minúsculas, números).
+- ✅ **Sesiones seguras** con cookies httpOnly y secure.
+- ✅ **Protección contra ataques** (CSRF, XSS, SQL Injection).
 
 #### RNF2: Rendimiento y Disponibilidad del Sistema ⚠️
 
@@ -749,6 +793,13 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - ✅ Registro de login/logout.
 - ✅ Restricciones de modificación en facturas/gastos cerrados.
 - ✅ Filtrado y búsqueda de registros.
+- ✅ **Backups diarios automáticos** de la base de datos.
+- ✅ **Backups incrementales** cada 6 horas durante horario laboral.
+- ✅ **Almacenamiento de backups** en ubicación geográfica diferente.
+- ✅ **Retención de backups** (30 días diarios, 12 meses mensuales).
+- ✅ **RTO ≤ 2 horas** (tiempo máximo para restaurar el sistema).
+- ✅ **RPO ≤ 6 horas** (pérdida máxima de datos).
+- ✅ **Plan de contingencia** documentado para incidentes críticos.
 
 ### Resumen de Cumplimiento
 
@@ -774,29 +825,53 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 
 #### Costo del Proyecto
 
-El costo del proyecto se estima en función de las **horas de desarrollo** y los **roles involucrados**:
+El costo del proyecto se estima en función de las **horas de desarrollo** y los **roles involucrados**. Utilizamos tarifas de mercado realistas para consultoras especializadas:
 
-- **Product Owner**: 40 horas × $30/hora = $1,200
-- **Analista Funcional**: 60 horas × $25/hora = $1,500
-- **Desarrollador Full Stack**: 120 horas × $35/hora = $4,200
-- **Scrum Master**: 30 horas × $25/hora = $750
+- **Product Owner**: 50 horas × $35/hora = $1,750
+- **Analista Funcional**: 80 horas × $30/hora = $2,400
+- **Desarrollador Full Stack**: 180 horas × $40/hora = $7,200
+- **Scrum Master**: 40 horas × $30/hora = $1,200
 
-**Total de desarrollo**: $7,650
+**Total de desarrollo**: $12,550
 
-#### Costos Adicionales
+#### Costos de Infraestructura (6 meses)
 
-- **Infraestructura (6 meses)**: MongoDB Atlas, hosting, dominio = $300
-- **Herramientas**: Figma, GitHub, Trello = $150
-- **Capacitación**: 20 horas × $30/hora = $600
-- **Documentación**: 15 horas × $25/hora = $375
+- **MongoDB Atlas** (M10 Cluster): $57/mes × 6 meses = $342
+- **Hosting/Deployment** (Vercel Pro): $20/mes × 6 meses = $120
+- **Dominio y SSL**: $15/año = $15
+- **Servicios de email** (SendGrid/SMTP): $15/mes × 6 meses = $90
+- **Almacenamiento de archivos** (Cloudinary/AWS S3): $10/mes × 6 meses = $60
 
-**Total de costos adicionales**: $1,425
+**Total de infraestructura**: $627
+
+#### Costos de Herramientas y Software
+
+- **Figma** (licencias equipo): $15/mes × 6 meses = $90
+- **GitHub** (Plan Team): $4/mes × 6 meses = $24
+- **Trello** (Plan Business): $10/mes × 6 meses = $60
+- **Google Workspace**: $6/mes × 6 meses = $36
+
+**Total de herramientas**: $210
+
+#### Costos de Capacitación y Documentación
+
+- **Capacitación del personal**: 30 horas × $35/hora = $1,050
+- **Documentación técnica y de usuario**: 20 horas × $30/hora = $600
+- **Manuales y guías**: 10 horas × $25/hora = $250
+
+**Total de capacitación y documentación**: $1,900
 
 #### Costo Total del Proyecto
 
-**Costo total**: $9,075
+**Costo total**: $15,287
 
-**Nota**: Este costo es una estimación basada en un equipo de 4 personas trabajando durante 6 meses. Los costos reales pueden variar según la complejidad del proyecto y los cambios en requerimientos.
+**Desglose**:
+- Desarrollo: $12,550 (82%)
+- Infraestructura: $627 (4%)
+- Herramientas: $210 (1%)
+- Capacitación y documentación: $1,900 (12%)
+
+**Nota**: Este costo es una estimación realista basada en tarifas de mercado para consultoras especializadas. Los costos reales pueden variar según la complejidad del proyecto, cambios en requerimientos y horas adicionales de desarrollo.
 
 ### Plan de Implementación
 
@@ -834,21 +909,55 @@ El costo del proyecto se estima en función de las **horas de desarrollo** y los
 
 #### Mantenimiento Correctivo
 
-- **Costo mensual**: $200 - $400 (según demanda).
+- **Costo mensual**: $300 - $600 (según demanda).
 - **Incluye**: Corrección de bugs, soporte técnico, actualizaciones de seguridad.
-- **Tiempo de respuesta**: 24-48 horas para bugs críticos.
+- **Tiempo de respuesta**: 24-48 horas para bugs críticos, 72 horas para bugs menores.
 
 #### Mantenimiento Evolutivo
 
-- **Costo por funcionalidad**: $500 - $1,500 (según complejidad).
+- **Costo por funcionalidad**: $800 - $2,000 (según complejidad).
 - **Incluye**: Nuevas funcionalidades, mejoras, optimizaciones.
-- **Tiempo de desarrollo**: 2-4 semanas por funcionalidad.
+- **Tiempo de desarrollo**: 3-6 semanas por funcionalidad.
 
 #### Soporte Técnico
 
-- **Costo mensual**: $150 - $300 (según plan).
+- **Costo mensual**: $200 - $400 (según plan).
 - **Incluye**: Soporte por email/chat, consultas, asistencia técnica.
 - **Horario**: Lunes a Viernes, 9:00 - 18:00.
+- **Soporte 24/7**: Disponible como opción adicional para sistemas críticos.
+
+### Plan de Mitigación de Riesgos y Seguridad
+
+#### Backups y Recuperación
+
+- **Backups diarios automáticos**: Respaldo completo de la base de datos todos los días.
+- **Backups incrementales**: Respaldo cada 6 horas durante horario laboral.
+- **Almacenamiento**: Backups almacenados en ubicación geográfica diferente al servidor principal.
+- **Retención**: Backups mantenidos por 30 días, backups mensuales por 12 meses.
+- **RTO (Recovery Time Objective)**: ≤ 2 horas (tiempo máximo para restaurar el sistema).
+- **RPO (Recovery Point Objective)**: ≤ 6 horas (pérdida máxima de datos).
+
+#### Seguridad de Datos
+
+- **Encriptación**: Datos encriptados en tránsito (HTTPS/TLS) y en reposo (AES-256).
+- **Autenticación robusta**: Sistema de autenticación de dos factores (2FA) disponible.
+- **Control de acceso**: Roles y permisos granulares por usuario.
+- **Auditoría**: Registro inmutable de todas las acciones del sistema.
+- **Cumplimiento normativo**: Cumplimiento con normativas de protección de datos personales.
+
+#### Monitoreo y Alertas
+
+- **Monitoreo 24/7**: Monitoreo continuo del sistema y alertas automáticas.
+- **Alertas de seguridad**: Notificaciones inmediatas ante intentos de acceso no autorizado.
+- **Alertas de rendimiento**: Notificaciones cuando el sistema supera umbrales de rendimiento.
+- **Dashboard de métricas**: Panel de control para monitorear el estado del sistema.
+
+#### Plan de Contingencia
+
+- **Servidores redundantes**: Infraestructura con redundancia para alta disponibilidad.
+- **Failover automático**: Cambio automático a servidores de respaldo en caso de falla.
+- **Equipo de respuesta**: Equipo disponible 24/7 para incidentes críticos.
+- **Procedimientos documentados**: Procedimientos claros para manejo de incidentes.
 
 ### Garantías
 
@@ -856,6 +965,8 @@ El costo del proyecto se estima en función de las **horas de desarrollo** y los
 - **Soporte incluido**: Primer mes de soporte técnico incluido.
 - **Actualizaciones de seguridad**: Incluidas durante el primer año.
 - **Documentación**: Documentación completa de usuario y administración.
+- **Capacitación**: Capacitación completa del personal incluida.
+- **Migración de datos**: Asistencia en migración de datos históricos (si aplica).
 
 ---
 
