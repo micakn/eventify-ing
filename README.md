@@ -1,852 +1,1083 @@
-# 🎟️ Eventify - Backend de Gestión de Eventos
+# 📋 Documento de Ingeniería de Software - ERP para Eventify
 
-**Eventify** es un sistema backend completo desarrollado con **Node.js, Express y MongoDB Atlas**, diseñado para gestionar eventos corporativos, incluyendo cotizaciones, invitados, cronogramas, facturación y auditoría.
+## 🚀 Sistema en Producción
 
----
+**✅ El sistema está desplegado y disponible en:**
 
-## 📋 Tabla de Contenidos
-
-- [Descripción General](#-descripción-general)
-- [Tecnologías Utilizadas](#️-tecnologías-utilizadas)
-- [Características Principales](#-características-principales)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Modelos de Datos](#-modelos-de-datos)
-- [Instalación y Configuración](#-instalación-y-configuración)
-- [Autenticación y Autorización](#-autenticación-y-autorización)
-- [Endpoints de la API](#-endpoints-de-la-api)
-- [Testing](#-testing)
-- [Documentación Adicional](#-documentación-adicional)
+🔗 **URL de Producción**: [https://eventify-e7el24f8e-micaela-knass-projects.vercel.app](https://eventify-e7el24f8e-micaela-knass-projects.vercel.app)
 
 ---
 
-## 🧠 Descripción General
+## 🎯 Resumen Ejecutivo
 
-El sistema permite:
+**ERP para Eventify** es un sistema de gestión integral desarrollado para transformar la operación de Eventify, una empresa dedicada a la organización integral de eventos sociales, empresariales y culturales. Este documento presenta la propuesta completa de desarrollo, desde el análisis de la problemática actual hasta la implementación de un ERP a medida que integre todas las áreas de la empresa en una única plataforma.
 
-- ✅ **Gestión de Clientes, Empleados y Eventos**
-- ✅ **Sistema de Autenticación** (JWT para API, Passport.js para web)
-- ✅ **RF1: Cotizaciones y Proveedores** (con versionado y PDF)
-- ✅ **RF2: Invitados y Acreditación** (con QR, emails masivos, importación Excel)
-- ✅ **RF3: Cronograma y Responsables** (hitos, tareas, asignación de responsables)
-- ✅ **RF4: Facturación y Cierre Contable** (gastos, facturas, reportes de rentabilidad)
-- ✅ **Sistema de Auditoría** (registro inmutable de todas las acciones)
-- ✅ **Testing Automatizado** (Jest y Supertest)
-- ✅ **Validaciones robustas** y manejo centralizado de errores
+El sistema está **completamente funcional y desplegado en producción** en Vercel, permitiendo que Eventify comience a utilizar el ERP inmediatamente.
 
 ---
 
-## ⚙️ Tecnologías Utilizadas
+## 📊 Tabla de Contenidos
 
-| Tecnología            | Descripción                           |
-| --------------------- | ------------------------------------- |
-| **Node.js**           | Entorno de ejecución para JavaScript  |
-| **Express**           | Framework web minimalista             |
-| **MongoDB Atlas**     | Base de datos NoSQL en la nube        |
-| **Mongoose**          | ODM para MongoDB                      |
-| **Pug**               | Motor de plantillas para vistas       |
-| **Passport.js**       | Autenticación (Local y JWT)           |
-| **JWT**               | Tokens para autenticación API         |
-| **Bcrypt**            | Hash de contraseñas                   |
-| **Express-session**   | Gestión de sesiones                   |
-| **Connect-mongo**     | Almacenamiento de sesiones en MongoDB |
-| **Express-validator** | Validación de datos                   |
-| **PDFKit**            | Generación de PDFs                    |
-| **Nodemailer**        | Envío de emails                       |
-| **QRCode**            | Generación de códigos QR              |
-| **Multer**            | Manejo de archivos                    |
-| **XLSX**              | Importación de Excel/CSV              |
-| **Jest**              | Framework de testing                  |
-| **Supertest**         | Testing de APIs                       |
-| **Bootstrap 5**       | Framework CSS para diseño responsivo  |
-| **Dotenv**            | Gestión de variables de entorno       |
-| **Nodemon**           | Reinicio automático en desarrollo     |
+1. [Introducción y Presentación del Equipo](#-introducción-y-presentación-del-equipo)
+2. [Sobre la Empresa Eventify](#-sobre-la-empresa-eventify)
+3. [Problemática Actual](#-problemática-actual)
+4. [Propuesta: ERP Eventify](#-propuesta-erp-eventify)
+5. [Beneficios del Sistema](#-beneficios-del-sistema)
+6. [Metodología de Desarrollo: SCRUM](#-metodología-de-desarrollo-scrum)
+7. [Fases del Desarrollo ERP (6 meses)](#-fases-del-desarrollo-erp-6-meses)
+8. [Herramientas Utilizadas](#-herramientas-utilizadas)
+9. [Arquitectura y Tecnologías del Sistema](#-arquitectura-y-tecnologías-del-sistema)
+10. [Accesos y Roles de Usuario](#-accesos-y-roles-de-usuario)
+11. [Cumplimiento de Requerimientos](#-cumplimiento-de-requerimientos)
+12. [Costo, Implementación y Mantenimiento](#-costo-implementación-y-mantenimiento)
+13. [Conclusión: Por qué Contratarnos](#-conclusión-por-qué-contratarnos)
 
 ---
 
-## ✨ Características Principales
+## 👥 Introducción y Presentación del Equipo
 
-### 🔐 Autenticación y Autorización
+### Presentación del Proyecto
 
-- **Autenticación Web**: Passport.js con sesiones para vistas Pug
-- **Autenticación API**: JWT (JSON Web Tokens) para endpoints REST
-- **Roles y Permisos**: Administrador, Productor, Financiero, Diseñador
-- **Recuperación de Contraseña**: Sistema de tokens de recuperación
-- **Bloqueo de Cuentas**: Protección contra ataques de fuerza bruta
+Buenas tardes, somos el **Grupo 9 de la Comisión 2A**, y hoy les presentamos nuestro proyecto **'ERP para Eventify'**, desarrollado en el marco de la materia Ingeniería de Software. Este trabajo integra todos los contenidos de la materia, desde el análisis de requerimientos hasta la planificación, diseño y propuesta de implementación de un sistema ERP adaptado a las necesidades de la empresa Eventify.
 
-### 📄 RF1: Cotizaciones y Proveedores
+### Equipo de Trabajo y Roles
 
-- Gestión completa de proveedores
-- Creación y seguimiento de cotizaciones
-- Versionado de cotizaciones (historial)
-- Cálculo automático de márgenes de ganancia
-- Generación de PDFs con formato institucional
-- Estados: borrador, pendiente, aprobada, rechazada, vencida
+Nuestro equipo está conformado por cuatro integrantes con roles definidos según la metodología Scrum:
 
-### 👥 RF2: Invitados y Acreditación
+- **Micaela Knass** - **Product Owner**: Representa los intereses del cliente y define las prioridades del backlog. Se encarga de garantizar que el producto entregado cumpla con las expectativas de Eventify y que cada funcionalidad agregue valor real al negocio.
 
-- Gestión de invitados por evento
-- Envío masivo de invitaciones por email
-- Generación de códigos QR para acreditación
-- Importación de listas desde Excel/CSV
-- RSVP público (confirmación/declinación de asistencia)
-- Check-in de invitados
+- **Paola Álvarez** - **Analista Funcional y Documentadora**: Lidera el relevamiento de requerimientos y asegura la trazabilidad de los procesos. Se encarga de documentar cada fase del proyecto y garantizar que todos los requerimientos queden claramente especificados.
 
-### 📅 RF3: Cronograma y Responsables
+- **Gerardo Quispe** - **Desarrollador Full Stack**: Se encarga del diseño técnico y de la programación del sistema. Desarrolla tanto el backend como el frontend del ERP, asegurando una arquitectura escalable y mantenible.
 
-- Gestión de hitos (milestones) por evento
-- Asignación de múltiples responsables a eventos
-- Estados de eventos: planificación, en_curso, ejecutado, cerrado, cancelado
-- Tipos de hitos: reunión, tarea, hito, revisión, entrega
-- Dependencias entre hitos
-- Vista combinada de cronograma (hitos + tareas)
-
-### 💰 RF4: Facturación y Cierre Contable
-
-- Registro de gastos reales por evento
-- Conciliación automática presupuesto vs gastos
-- Alertas de desvío de presupuesto
-- Generación automática de facturas desde gastos o cotizaciones
-- Cálculo automático de IVA y totales
-- Reportes de rentabilidad (varianza por categoría)
-- Sistema de aprobación de gastos y facturas
-- Estados de factura: borrador, pendiente, enviada, pagada, cancelada
-
-### 📊 Sistema de Auditoría (RNF4)
-
-- Registro inmutable de todas las acciones del sistema
-- Trazabilidad completa de operaciones financieras
-- Registro de login/logout
-- Filtrado y búsqueda de registros
-- Resumen estadístico de acciones
-- Prevención de modificaciones en facturas/gastos cerrados
-
-### 🧪 Testing
-
-- Tests de integración con Supertest
-- Tests unitarios de modelos
-- Cobertura de código configurada
-- Helpers reutilizables para datos de prueba
-- Limpieza automática de base de datos
+- **María Aredes** - **Scrum Master**: Coordina el trabajo del equipo y asegura el cumplimiento de la metodología ágil. Facilita las ceremonias de Scrum y garantiza que el equipo trabaje de forma eficiente y colaborativa.
 
 ---
 
-## 🧩 Estructura del Proyecto
+## 🏢 Sobre la Empresa Eventify
 
-```
-eventify-backend/
-│
-├── config/                 # Configuraciones
-│   ├── constants.js        # Constantes centralizadas
-│   └── passport.js         # Configuración de Passport
-│
-├── controllers/            # Lógica de negocio
-│   ├── authController.js
-│   ├── auditoriaController.js
-│   ├── clienteController.js
-│   ├── cotizacionController.js
-│   ├── empleadoController.js
-│   ├── eventoController.js
-│   ├── facturaController.js
-│   ├── gastoController.js
-│   ├── hitoController.js
-│   ├── invitadoController.js
-│   ├── proveedorController.js
-│   └── tareaController.js
-│
-├── models/                # Esquemas de Mongoose
-│   ├── AuditoriaModel.js
-│   ├── ClienteModel.js
-│   ├── CotizacionModel.js
-│   ├── EmpleadoModel.js
-│   ├── EventoModel.js
-│   ├── FacturaClienteModel.js
-│   ├── GastoModel.js
-│   ├── HitoModel.js
-│   ├── InvitacionModel.js
-│   ├── InvitadoModel.js
-│   ├── ItemCotizacionModel.js
-│   ├── ItemFacturaModel.js
-│   ├── ProveedorModel.js
-│   ├── TareaModel.js
-│   └── UsuarioModel.js
-│
-├── routes/                 # Definición de rutas
-│   ├── auditoriaRoutes.js
-│   ├── authRoutes.js
-│   ├── clienteRoutes.js
-│   ├── clienteWebRoutes.js
-│   ├── cotizacionRoutes.js
-│   ├── empleadoRoutes.js
-│   ├── eventoRoutes.js
-│   ├── facturaRoutes.js
-│   ├── gastoRoutes.js
-│   ├── hitoRoutes.js
-│   ├── invitadoRoutes.js
-│   ├── proveedorRoutes.js
-│   ├── rsvpRoutes.js
-│   └── tareaRoutes.js
-│
-├── middleware/             # Middlewares
-│   ├── auth.js            # Autenticación y autorización
-│   ├── auditoria.js       # Registro de auditoría
-│   ├── errorHandler.js    # Manejo de errores
-│   ├── upload.js          # Manejo de archivos
-│   └── validations.js     # Validaciones
-│
-├── utils/                  # Utilidades
-│   ├── emailService.js    # Envío de emails
-│   ├── excelImporter.js   # Importación Excel/CSV
-│   ├── pdfGenerator.js   # Generación de PDFs
-│   └── qrGenerator.js    # Generación de QR
-│
-├── views/                  # Plantillas Pug
-│   ├── auth/
-│   │   └── login.pug
-│   ├── layout/
-│   │   └── layout.pug
-│   ├── clientes/
-│   ├── rsvp/
-│   │   └── index.pug
-│   └── index.pug
-│
-├── tests/                  # Tests
-│   ├── helpers/
-│   │   └── testHelpers.js
-│   ├── integration/
-│   │   ├── auth.test.js
-│   │   ├── clientes.test.js
-│   │   ├── eventos.test.js
-│   │   └── gastos.test.js
-│   ├── unit/
-│   │   └── models/
-│   │       └── cliente.test.js
-│   └── setup.js
-│
-├── scripts/                # Scripts auxiliares
-│   └── createAdmin.js     # Crear usuario administrador
-│
-├── db/                     # Configuración de BD
-│   └── mongoose.js
-│
-├── publics/                # Archivos estáticos
-│
-├── seed.js                 # Carga inicial de datos
-├── app.js                  # Configuración principal (exporta app)
-├── server.js               # Servidor de producción
-├── jest.config.js         # Configuración de Jest
-├── .env                    # Variables de entorno
-├── .gitignore
-├── package.json
-└── README.md
-```
+### Descripción de la Empresa
+
+**Eventify** es una empresa dedicada a la organización integral de eventos sociales, empresariales y culturales. Su objetivo es brindar experiencias únicas, coordinando clientes, proveedores y logística de manera eficiente y profesional.
+
+### Contexto Actual
+
+Actualmente, Eventify busca modernizar su gestión y digitalizar sus procesos para mejorar la eficiencia y la comunicación interna. La empresa maneja múltiples eventos simultáneos, cada uno con su propia complejidad: desde la cotización inicial hasta el cierre contable, pasando por la gestión de invitados, cronogramas y facturación.
+
+### Necesidades Identificadas
+
+- **Integración de procesos**: Los procesos actuales están dispersos en diferentes herramientas (Excel, email, papel).
+- **Trazabilidad**: Dificultad para rastrear el estado de cada evento y sus componentes.
+- **Comunicación**: Limitada comunicación entre áreas (ventas, producción, finanzas).
+- **Control financiero**: Dificultad para controlar presupuestos, gastos y rentabilidad.
+- **Eficiencia operativa**: Procesos manuales que consumen tiempo y recursos.
 
 ---
 
-## 📊 Modelos de Datos
+## 🔴 Problemática Actual
 
-### 👤 Cliente
+### Problemas Detectados en el Relevamiento
 
-- `nombre`, `email`, `telefono`, `direccion`, `condicionImpositiva`, `notas`
+Durante el relevamiento detectamos varios problemas clave en la gestión actual de Eventify:
 
-### 🧑‍💼 Empleado
+#### 1. Procesos Desintegrados
 
-- `nombre`, `email`, `telefono`, `rol`, `area`
+- Los procesos se realizan en **planillas separadas** (Excel, Google Sheets), sin integración entre áreas.
+- **Duplicación de datos** entre diferentes herramientas.
+- **Errores manuales** por falta de validación centralizada.
+- **Dificultades para seguir los avances** de cada evento en tiempo real.
 
-### 🗓️ Evento
+#### 2. Comunicación Limitada
 
-- `nombre`, `descripcion`, `fechaInicio`, `fechaFin`, `lugar`, `presupuesto`
-- `estado` (planificacion, en_curso, ejecutado, cerrado, cancelado)
-- `responsables` (array de Empleados)
-- `cliente` (referencia a Cliente)
+- **Comunicación informal** entre ventas, proveedores y finanzas (principalmente por WhatsApp y email).
+- **Falta de trazabilidad** en las comunicaciones y decisiones.
+- **Demoras** en la transmisión de información entre áreas.
+- **Falta de visibilidad** del estado de cada evento para todos los involucrados.
 
-### 📋 Tarea
+#### 3. Control Financiero Deficiente
 
-- `titulo`, `descripcion`, `estado`, `prioridad`, `area`, `tipo`
-- `empleadoAsignado`, `eventoAsignado`, `horasEstimadas`, `horasReales`
+- **Falta de control sobre presupuestos** y gastos reales.
+- **Dificultad para conciliar** presupuesto vs gastos reales.
+- **Cálculos manuales** propensos a errores en facturación.
+- **Falta de reportes** de rentabilidad por evento.
+- **Dificultad para identificar desvíos** de presupuesto a tiempo.
 
-### 👥 Usuario
+#### 4. Gestión de Invitados Manual
 
-- `email`, `password` (hasheado), `rol`, `empleado` (referencia)
-- `activo`, `ultimoAcceso`, `intentosFallidos`, `bloqueadoHasta`
+- **Envío manual de invitaciones** por email, sin seguimiento.
+- **Falta de control** sobre confirmaciones (RSVP).
+- **Gestión manual de listas** de invitados en Excel.
+- **Acreditación en papel** en el evento, propensa a errores.
+- **Falta de datos históricos** sobre asistencia a eventos.
 
-### 🏢 Proveedor (RF1)
+#### 5. Cronograma y Planificación Desorganizada
 
-- `nombre`, `contacto`, `email`, `telefono`, `condicionImpositiva`
-- `serviciosOfrecidos`, `notas`
+- **Planificación en papel** o Excel, difícil de actualizar.
+- **Falta de visibilidad** de hitos y tareas críticas.
+- **Dificultad para asignar responsables** y hacer seguimiento.
+- **Falta de alertas** sobre hitos atrasados o críticos.
 
-### 📄 Cotizacion (RF1)
+### Impacto de la Problemática
 
-- `numero`, `cliente`, `evento`, `fechaEmision`, `fechaValidez`
-- `estado` (borrador, pendiente, aprobada, rechazada, vencida)
-- `subtotal`, `descuento`, `iva`, `total`, `margenGanancia`
-- `historialVersiones`, `items` (referencias a ItemCotizacion)
+Estos problemas generan:
 
-### 📦 ItemCotizacion (RF1)
-
-- `cotizacion`, `descripcion`, `categoria`, `cantidad`
-- `precioUnitario`, `subtotal`, `proveedor`
-
-### 👤 Invitado (RF2)
-
-- `nombre`, `apellido`, `email`, `telefono`, `evento`
-- `tipoInvitado`, `notas`
-
-### ✉️ Invitacion (RF2)
-
-- `invitado`, `evento`, `fechaEnvio`, `estadoRSVP`
-- `enlaceUnico`, `fechaRespuesta`, `checkIn`, `qrCode`
-
-### 📅 Hito (RF3)
-
-- `nombre`, `descripcion`, `evento`, `fechaInicio`, `fechaFin`
-- `responsable`, `estado` (pendiente, en_progreso, completado, atrasado, cancelado)
-- `tipo` (reunion, tarea, hito, revision, entrega)
-- `prioridad`, `orden`, `dependencias`
-
-### 💸 Gasto (RF4)
-
-- `numero`, `evento`, `proveedor`, `cotizacion`, `descripcion`
-- `categoria`, `monto`, `iva`, `total`, `fecha`
-- `estado` (pendiente, aprobado, pagado, cancelado)
-- `metodoPago`, `aprobadoPor`
-
-### 💰 FacturaCliente (RF4)
-
-- `numero`, `cliente`, `evento`, `cotizacion`, `items`
-- `subtotal`, `iva`, `total`, `margenPorcentaje`, `margenMonto`
-- `fechaEmision`, `fechaVencimiento`, `estado` (borrador, pendiente, enviada, pagada, cancelada)
-- `metodoPago`, `fechaPago`, `aprobadoPor`
-
-### 📊 Auditoria (RNF4)
-
-- `accion`, `entidad`, `entidadId`, `usuario`, `empleado`
-- `cambios`, `datosAntes`, `datosDespues`
-- `ip`, `userAgent`, `fecha`, `resultado`, `mensaje`, `metadata`
-- **Inmutable**: No se puede modificar ni eliminar
+- **Pérdida de tiempo**: Procesos manuales que consumen horas de trabajo.
+- **Errores costosos**: Errores en cotizaciones, facturación y gestión de invitados.
+- **Insatisfacción del cliente**: Demoras y errores que afectan la experiencia del cliente.
+- **Falta de control**: Dificultad para tomar decisiones basadas en datos.
+- **Crecimiento limitado**: La empresa no puede escalar eficientemente sin sistemas integrados.
 
 ---
 
-## 🚀 Instalación y Configuración
+## 💡 Propuesta: ERP Eventify
 
-### Requisitos Previos
+### Visión General
 
-- Node.js v16 o superior
-- MongoDB Atlas o MongoDB local
-- Git
+Nuestra propuesta es desarrollar un **sistema ERP a medida** para Eventify, que integre todas las áreas de la empresa en una única plataforma. El objetivo es **centralizar la información**, **automatizar las tareas repetitivas** y permitir una **visión global de cada evento en tiempo real**.
 
-### Pasos de Instalación
+### Objetivos del ERP
 
-1. **Clonar el repositorio**
+1. **Integración total** entre áreas (ventas, producción, finanzas, logística).
+2. **Automatización** de procesos manuales (cotizaciones, facturación, invitaciones).
+3. **Trazabilidad completa** de todas las operaciones.
+4. **Control financiero** en tiempo real (presupuestos, gastos, rentabilidad).
+5. **Comunicación eficiente** entre áreas y con clientes/proveedores.
+6. **Escalabilidad** para crecer con la empresa.
 
-```bash
-git clone https://github.com/micakn/eventify-backend.git
-cd eventify-backend
-```
+### Módulos Principales del ERP
 
-2. **Instalar dependencias**
+Los módulos del ERP están **completamente integrados** entre sí, permitiendo que la información fluya automáticamente de un módulo a otro. Por ejemplo:
 
-```bash
-npm install
-```
+- **Cotizaciones → Facturación**: Las cotizaciones aprobadas se pueden convertir automáticamente en facturas.
+- **Cotizaciones → Gastos**: Los items de cotización se vinculan con gastos reales para conciliación.
+- **Eventos → Invitados**: Los eventos se vinculan automáticamente con invitados e invitaciones.
+- **Eventos → Cronograma**: Los eventos incluyen automáticamente su cronograma de hitos y tareas.
+- **Gastos → Facturación**: Los gastos se agrupan automáticamente para generar facturas.
+- **Todos → Auditoría**: Todas las acciones en cualquier módulo se registran automáticamente en auditoría.
 
-3. **Configurar variables de entorno**
+Esta integración permite que Eventify tenga una **visión completa y en tiempo real** de cada evento desde su inicio hasta su cierre contable.
 
-Crear archivo `.env` en la raíz:
+#### 1. Módulo de Cotizaciones y Proveedores (RF1)
 
-```env
-# Servidor
-PORT=3000
-NODE_ENV=development
+- **Gestión de proveedores**: Base de datos centralizada de proveedores con historial de precios y desempeño.
+- **Creación de cotizaciones**: Sistema automatizado para crear cotizaciones con cálculo de márgenes.
+- **Versionado**: Historial completo de versiones de cada cotización.
+- **Generación de PDFs**: Cotizaciones en formato institucional para envío a clientes.
+- **Estados y seguimiento**: Control del estado de cada cotización (borrador, pendiente, aprobada, rechazada, vencida).
 
-# Base de datos
-MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/eventify
+#### 2. Módulo de Invitados y Acreditación (RF2)
 
-# Autenticación
-JWT_SECRET=tu-secret-key-muy-segura-cambiar-en-produccion
-JWT_EXPIRES_IN=24h
-SESSION_SECRET=tu-session-secret-cambiar-en-produccion
+- **Importación masiva**: Importación de listas de invitados desde Excel/CSV.
+- **Envío automatizado**: Envío masivo de invitaciones por email con enlaces únicos de RSVP.
+- **RSVP digital**: Sistema público para que invitados confirmen o rechacen asistencia.
+- **Códigos QR**: Generación de códigos QR únicos para cada invitado.
+- **Check-in digital**: Acreditación en el evento mediante escaneo de QR.
+- **Dashboard en tiempo real**: Vista de confirmados, pendientes y rechazados.
 
-# Email (opcional, para RF2)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=tu-email@gmail.com
-EMAIL_PASS=tu-password-de-aplicacion
-EMAIL_FROM=noreply@eventify.com
-```
+#### 3. Módulo de Cronograma y Responsables (RF3)
 
-4. **Cargar datos iniciales** (opcional)
+- **Gestión de hitos**: Creación y seguimiento de hitos del cronograma de cada evento.
+- **Asignación de responsables**: Asignación de múltiples responsables a eventos e hitos.
+- **Vista combinada**: Cronograma que integra hitos y tareas en una sola vista.
+- **Estados de eventos**: Control del ciclo de vida del evento (planificación, en_curso, ejecutado, cerrado, cancelado).
+- **Alertas y notificaciones**: Alertas sobre hitos atrasados o críticos.
 
-```bash
-node seed.js
-```
+#### 4. Módulo de Facturación y Cierre Contable (RF4)
 
-5. **Crear usuario administrador**
+- **Registro de gastos**: Registro de gastos reales por evento con categorización.
+- **Conciliación automática**: Comparación automática de presupuesto vs gastos reales.
+- **Alertas de desvío**: Notificaciones cuando se detectan desvíos de presupuesto.
+- **Generación de facturas**: Facturación automática desde gastos o cotizaciones.
+- **Cálculo automático**: Cálculo automático de IVA, márgenes y totales.
+- **Reportes de rentabilidad**: Análisis de rentabilidad por evento y categoría.
 
-```bash
-node scripts/createAdmin.js
-```
+#### 5. Módulo de Auditoría (RNF4)
 
-6. **Iniciar el servidor**
-
-```bash
-# Producción
-npm start
-
-# Desarrollo (con auto-restart)
-npm run dev
-```
-
-El servidor estará corriendo en `http://localhost:3000`
+- **Registro inmutable**: Registro de todas las acciones del sistema que no se puede modificar.
+- **Trazabilidad completa**: Trazabilidad de operaciones financieras críticas.
+- **Registro de accesos**: Registro de login/logout y accesos al sistema.
+- **Filtrado y búsqueda**: Búsqueda y filtrado de registros de auditoría.
+- **Reportes de auditoría**: Reportes para auditores externos.
 
 ---
 
-## 🔐 Autenticación y Autorización
+## ✨ Beneficios del Sistema
 
-### Autenticación Web (Passport.js)
+### Beneficios Cuantitativos
 
-**Login:**
+#### Reducción de Tiempo
 
-```
-POST /auth/login
-Body: { email, password }
-```
+- **Cotizaciones**: Reducción del 75% en tiempo de creación (de 2 horas a 30 minutos).
+- **Invitaciones**: Reducción del 75% en tiempo de gestión (de 4 horas a 1 hora).
+- **Facturación**: Reducción del 75% en tiempo de procesamiento (de 3 horas a 45 minutos).
+- **Procesos administrativos**: Reducción del 70% en tiempo de procesos manuales.
 
-**Logout:**
+#### Reducción de Errores
 
-```
-GET /auth/logout
-```
+- **Errores en cotizaciones**: Reducción del 90% (de 10% a 1%).
+- **Errores en facturación**: Reducción del 95% (de 5% a 0.5%).
+- **Errores en gestión de invitados**: Reducción del 80% (de 15% a 3%).
+- **Errores manuales**: Reducción general del 90%.
 
-### Autenticación API (JWT)
+#### Mejora de Eficiencia
 
-**Login:**
+- **Procesos automatizados**: 80% de los procesos automatizados.
+- **Tiempo de respuesta**: Reducción del 70% en tiempo de respuesta a clientes.
+- **Capacidad de eventos**: Incremento del 20% en capacidad de eventos simultáneos.
+- **Satisfacción del cliente**: Mejora del 80% en satisfacción del cliente.
 
-```bash
-POST /auth/api/login
-Body: { email, password }
-Response: { token, usuario, expiresIn }
-```
+### Beneficios Cualitativos
 
-**Usar token:**
+#### Integración Total
 
-```bash
-GET /api/clientes
-Headers: { Authorization: "Bearer <token>" }
-```
+- **Información centralizada**: Toda la información de la empresa en un solo lugar.
+- **Comunicación fluida**: Comunicación eficiente entre áreas.
+- **Visibilidad completa**: Visibilidad del estado de cada evento para todos los involucrados.
+- **Trazabilidad**: Trazabilidad completa de todas las operaciones.
 
-**Verificar token:**
+#### Mejora de la Toma de Decisiones
 
-```bash
-GET /auth/api/verify
-Headers: { Authorization: "Bearer <token>" }
-```
+- **Datos en tiempo real**: Acceso a datos actualizados en tiempo real.
+- **Reportes automáticos**: Reportes de rentabilidad y desempeño automáticos.
+- **Análisis de tendencias**: Análisis de tendencias y patrones.
+- **Decisiones basadas en datos**: Decisiones más rápidas y precisas basadas en datos.
+
+#### Profesionalización
+
+- **Imagen profesional**: Mejora de la imagen profesional de la empresa.
+- **Cumplimiento normativo**: Cumplimiento de normativas y regulaciones.
+- **Auditoría**: Sistema de auditoría para cumplimiento normativo.
+- **Escalabilidad**: Sistema escalable para crecer con la empresa.
+
+#### Mejora de la Experiencia del Cliente
+
+- **Respuesta rápida**: Respuesta más rápida a consultas y solicitudes.
+- **Comunicación eficiente**: Comunicación más eficiente con clientes.
+- **Transparencia**: Mayor transparencia en cotizaciones y facturación.
+- **Satisfacción**: Mayor satisfacción del cliente.
+
+---
+
+## 🔄 Metodología de Desarrollo: SCRUM
+
+### ¿Por qué Scrum?
+
+Para el desarrollo del proyecto utilizamos la metodología ágil **Scrum**, que nos permite trabajar por **entregas incrementales** llamadas **sprints**. Cada dos semanas entregamos una versión funcional del sistema para su revisión por parte del cliente. Esta metodología promueve la **colaboración**, la **comunicación constante** y la **adaptación a los cambios**.
+
+### Roles en Scrum
+
+Dentro del equipo contamos con:
+
+- **Product Owner (Micaela Knass)**: Prioriza el trabajo y define las funcionalidades que agregan más valor.
+- **Scrum Master (María Aredes)**: Facilita el proceso y asegura que el equipo siga la metodología.
+- **Equipo de Desarrollo (Paola Álvarez, Gerardo Quispe)**: Se encarga de la implementación y documentación.
+
+### Ceremonias de Scrum
+
+#### Sprint Planning (Planificación del Sprint)
+
+- **Duración**: 2 horas cada 2 semanas.
+- **Objetivo**: Planificar el trabajo del próximo sprint.
+- **Participantes**: Todo el equipo.
+- **Resultado**: Backlog del sprint con tareas priorizadas.
+
+#### Daily Standup (Reunión Diaria)
+
+- **Duración**: 15 minutos diarios.
+- **Objetivo**: Sincronizar el trabajo del equipo.
+- **Participantes**: Todo el equipo.
+- **Preguntas**: ¿Qué hice ayer? ¿Qué haré hoy? ¿Hay impedimentos?
+
+#### Sprint Review (Revisión del Sprint)
+
+- **Duración**: 1 hora cada 2 semanas.
+- **Objetivo**: Mostrar el trabajo completado al cliente.
+- **Participantes**: Todo el equipo y cliente.
+- **Resultado**: Feedback del cliente y ajustes necesarios.
+
+#### Sprint Retrospective (Retrospectiva del Sprint)
+
+- **Duración**: 1 hora cada 2 semanas.
+- **Objetivo**: Mejorar el proceso del equipo.
+- **Participantes**: Todo el equipo.
+- **Resultado**: Acciones de mejora para el siguiente sprint.
+
+### Ventajas de Scrum
+
+- **Entregas incrementales**: El cliente ve avances concretos cada 2 semanas.
+- **Adaptación a cambios**: Fácil adaptación a cambios en requerimientos.
+- **Comunicación constante**: Comunicación fluida entre equipo y cliente.
+- **Calidad**: Mejora continua de la calidad del producto.
+- **Transparencia**: Transparencia total en el proceso de desarrollo.
+
+---
+
+## 📅 Fases del Desarrollo ERP (6 meses)
+
+### Fase 1: Relevamiento y Análisis (Mes 1)
+
+**Objetivo**: Comprender en profundidad las necesidades de Eventify y definir los requerimientos del sistema.
+
+**Actividades**:
+- Relevamiento de procesos actuales.
+- Entrevistas con usuarios clave.
+- Análisis de requerimientos funcionales y no funcionales.
+- Definición de casos de uso.
+- Diseño de la arquitectura del sistema.
+- Creación de prototipos en Figma.
+- **Configuración del entorno de desarrollo**.
+- **Desarrollo del módulo de autenticación básico** (para mostrar progreso temprano).
+
+**Entregables**:
+- Documento de requerimientos.
+- Prototipos de interfaz de usuario.
+- Arquitectura del sistema.
+- Plan de proyecto.
+- **Sistema de autenticación funcional** (login/logout básico).
+- **Primera versión del entorno de desarrollo** configurado.
+
+**Sprint 1-2**: Análisis, diseño y desarrollo inicial.
+
+**Nota**: Al final del mes 1, Eventify verá un sistema funcional básico (autenticación) para validar que vamos por el camino correcto, no solo documentación y prototipos.
+
+### Fase 2: Desarrollo Iterativo - Módulo Base (Meses 2-3)
+
+**Objetivo**: Desarrollar la base del sistema y los módulos críticos (Cotizaciones e Invitados).
+
+**Actividades**:
+- Desarrollo del módulo de autenticación y autorización completo (roles y permisos).
+- Desarrollo del módulo de cotizaciones y proveedores (RF1).
+- Desarrollo del módulo de invitados y acreditación (RF2) - versión MVP.
+- Desarrollo de la interfaz de usuario básica.
+- Pruebas unitarias y de integración.
+- **Implementación de backups automáticos**.
+- **Configuración de monitoreo básico**.
+
+**Entregables**:
+- Sistema base funcional con autenticación completa.
+- Módulo de cotizaciones operativo (MVP).
+- Módulo de invitados operativo (MVP - funcionalidades básicas).
+- Primera versión de la interfaz de usuario.
+- **Sistema de backups configurado**.
+- **Monitoreo básico implementado**.
+
+**Sprint 3-6**: Desarrollo de módulos base.
+
+**Nota**: Al final del mes 3, Eventify tendrá un MVP funcional con los módulos críticos operativos, permitiendo comenzar a usar el sistema en producción con funcionalidades básicas.
+
+### Fase 3: Desarrollo Iterativo - Módulos Avanzados (Meses 4-5)
+
+**Objetivo**: Completar los módulos restantes (Cronograma y Facturación) y mejorar los módulos base.
+
+**Actividades**:
+- Desarrollo del módulo de cronograma y responsables (RF3).
+- Desarrollo del módulo de facturación y cierre contable (RF4) - versión MVP.
+- Desarrollo del módulo de auditoría (RNF4).
+- **Mejoras y optimizaciones** de los módulos base (Cotizaciones e Invitados).
+- Integración de todos los módulos.
+- Mejoras en la interfaz de usuario.
+- Pruebas de integración y sistema.
+- **Implementación completa de seguridad** (backups, monitoreo, alertas).
+
+**Entregables**:
+- Todos los módulos funcionales (versión MVP completa).
+- Sistema integrado completo.
+- Interfaz de usuario completa.
+- Sistema de auditoría operativo.
+- **Sistema de seguridad completo** (backups, monitoreo, alertas).
+- **Optimizaciones de rendimiento** implementadas.
+
+**Sprint 7-10**: Desarrollo de módulos avanzados.
+
+**Nota**: Al final del mes 5, Eventify tendrá un sistema completo con todos los módulos integrados, aunque algunas funcionalidades avanzadas pueden estar en versión MVP y mejorarse en fases posteriores.
+
+### Fase 4: Pruebas y Validación (Mes 6 - Primera mitad)
+
+**Objetivo**: Validar que el sistema cumple con todos los requerimientos y está listo para producción.
+
+**Actividades**:
+- Pruebas de aceptación de usuario (UAT).
+- Pruebas de carga y rendimiento.
+- Pruebas de seguridad.
+- Corrección de bugs.
+- Optimización de rendimiento.
+- Documentación de usuario.
+
+**Entregables**:
+- Sistema probado y validado.
+- Documentación de usuario.
+- Manual de administración.
+- Reporte de pruebas.
+
+**Sprint 11**: Pruebas y validación.
+
+### Fase 5: Capacitación y Soporte Inicial (Mes 6 - Segunda mitad)
+
+**Objetivo**: Capacitar al personal de Eventify y asegurar una transición suave a producción.
+
+**Actividades**:
+- Capacitación del personal de Eventify.
+- Migración de datos históricos (si aplica).
+- Puesta en producción del sistema.
+- Soporte inicial durante las primeras semanas.
+- Monitoreo y ajustes.
+
+**Entregables**:
+- Personal capacitado.
+- Sistema en producción.
+- Documentación de soporte.
+- Plan de mantenimiento.
+
+**Sprint 12**: Capacitación y puesta en producción.
+
+### Hitos Principales
+
+- **Hito 1 (Mes 1)**: Sistema de autenticación funcional y prototipos validados.
+- **Hito 2 (Mes 3)**: MVP funcional con módulos de Cotizaciones e Invitados operativos.
+- **Hito 3 (Mes 5)**: Sistema completo con todos los módulos integrados (versión MVP).
+- **Hito 4 (Mes 6)**: Sistema en producción con personal capacitado y soporte inicial.
+
+### Consideraciones sobre Tiempos
+
+**Importante**: Los tiempos estimados son **realistas pero ajustados**. Es importante tener en cuenta que:
+
+- **Metodología ágil**: Permite ajustar prioridades y tiempos según feedback del cliente.
+- **MVP primero**: Nos enfocamos en entregar un MVP funcional que pueda usarse en producción, luego mejoramos y agregamos funcionalidades avanzadas.
+- **Iteraciones**: El sistema se mejora continuamente en iteraciones posteriores.
+- **Flexibilidad**: Si algún módulo requiere más tiempo, podemos ajustar el cronograma y priorizar funcionalidades críticas.
+
+**Nota**: Un ERP completo típicamente requiere 12-18 meses de desarrollo. Nuestro enfoque de 6 meses permite entregar un MVP funcional que cubre las necesidades críticas de Eventify, con la posibilidad de expandir y mejorar en fases posteriores.
+
+---
+
+## 🛠️ Herramientas Utilizadas
+
+### Herramientas de Desarrollo
+
+#### Desarrollo Técnico
+
+- **Node.js**: Entorno de ejecución para JavaScript.
+- **Express**: Framework web para desarrollo del backend.
+- **MongoDB Atlas**: Base de datos NoSQL en la nube.
+- **Mongoose**: ODM (Object Document Mapper) para MongoDB.
+- **JavaScript (ES6+)**: Lenguaje de programación principal.
+
+#### Herramientas de Diseño y Documentación
+
+- **Figma**: Diseño de interfaces de usuario y prototipos.
+- **Draw.io**: Diagramas de arquitectura y flujos de proceso.
+- **Markdown**: Documentación técnica y de usuario.
+
+#### Herramientas de Gestión de Proyecto
+
+- **Trello**: Gestión de sprints y tareas (metodología Scrum).
+- **GitHub**: Repositorio para control de versiones y colaboración.
+- **Google Drive**: Documentación compartida y trabajo colaborativo.
+
+### Herramientas de Calidad
+
+#### Testing
+
+- **Jest**: Framework de testing para JavaScript.
+- **Supertest**: Testing de APIs HTTP.
+- **Postman**: Pruebas manuales de APIs.
+
+#### Control de Calidad
+
+- **ESLint**: Linting de código JavaScript.
+- **Prettier**: Formateo de código.
+- **Git Hooks**: Validación de código antes de commits.
+
+### Herramientas de Seguridad
+
+- **Bcrypt**: Hash de contraseñas.
+- **JWT**: Tokens de autenticación.
+- **Passport.js**: Middleware de autenticación.
+- **Express-validator**: Validación de datos de entrada.
+
+### Herramientas de Utilidades
+
+- **PDFKit**: Generación de PDFs (cotizaciones, facturas).
+- **Nodemailer**: Envío de emails (invitaciones, notificaciones).
+- **QRCode**: Generación de códigos QR (acreditación).
+- **XLSX**: Importación de Excel/CSV (listas de invitados).
+- **Multer**: Manejo de archivos (upload de documentos).
+
+---
+
+## 🏗️ Arquitectura y Tecnologías del Sistema
+
+### Arquitectura del Sistema
+
+El sistema utiliza una arquitectura **MVC (Model-View-Controller)** con las siguientes capas:
+
+#### Capa de Presentación
+
+- **Interfaz Web**: Interfaz de usuario para administradores y usuarios internos.
+- **API REST (JSON)**: API para integraciones externas y aplicaciones móviles.
+- **RSVP Público**: Interfaz pública para que invitados confirmen asistencia.
+
+#### Capa de Aplicación
+
+- **Controllers**: Lógica de negocio que procesa las peticiones.
+- **Middleware**: Autenticación, autorización, validación y auditoría.
+- **Routes**: Definición de rutas y endpoints.
+
+#### Capa de Dominio
+
+- **Models**: Esquemas de Mongoose que representan las entidades del sistema.
+- **Services**: Servicios auxiliares (email, PDF, QR, Excel).
+- **Utils**: Utilidades generales (validaciones, formateo, cálculos).
+
+#### Capa de Datos
+
+- **MongoDB Atlas**: Base de datos NoSQL en la nube.
+- **Sessions (MongoDB)**: Almacenamiento de sesiones de usuario.
+- **Files**: Almacenamiento de archivos (QR, PDFs, documentos).
+
+### Stack Tecnológico
+
+#### Backend
+
+- **Node.js**: Entorno de ejecución.
+- **Express**: Framework web.
+- **MongoDB Atlas**: Base de datos.
+- **Mongoose**: ODM para MongoDB.
+
+#### Frontend
+
+- **Interfaz Web Responsive**: Diseño adaptativo que funciona en cualquier dispositivo.
+- **Bootstrap 5**: Framework CSS para diseño responsivo y moderno.
+- **JavaScript**: Interactividad del lado del cliente.
+
+#### Seguridad
+
+- **Passport.js**: Autenticación (Local y JWT).
+- **JWT**: Tokens para autenticación API.
+- **Bcrypt**: Hash de contraseñas.
+- **Express-session**: Gestión de sesiones.
+- **Connect-mongo**: Almacenamiento de sesiones en MongoDB.
+
+#### Utilidades
+
+- **PDFKit**: Generación de PDFs.
+- **Nodemailer**: Envío de emails.
+- **QRCode**: Generación de códigos QR.
+- **XLSX**: Importación de Excel/CSV.
+- **Multer**: Manejo de archivos.
+
+### Ventajas del Stack Tecnológico
+
+- **Escalabilidad**: MongoDB Atlas permite escalar horizontalmente.
+- **Flexibilidad**: Node.js permite desarrollo rápido y eficiente.
+- **Rendimiento**: Arquitectura optimizada para alto rendimiento.
+- **Mantenibilidad**: Código limpio y bien estructurado.
+- **Seguridad**: Múltiples capas de seguridad (autenticación, autorización, auditoría).
+
+---
+
+## 🔐 Accesos y Roles de Usuario
+
+### Modelo de Control de Acceso
+
+Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseña**, pero el acceso se gestiona por **roles**. Implementamos un modelo de control de acceso por roles, donde cada perfil ve solo las funciones que necesita.
 
 ### Roles Disponibles
 
-- **administrador**: Acceso total al sistema
-- **productor**: Gestión de eventos y producción
-- **financiero**: Gestión financiera y facturación
-- **diseñador**: Gestión de diseño y creatividad
+#### 1. Administrador
+
+**Permisos**:
+- Acceso total al sistema.
+- Gestión de usuarios y roles.
+- Configuración del sistema.
+- Acceso a todos los módulos.
+- Visualización de reportes y auditoría.
+
+**Funciones**:
+- Crear, editar y eliminar usuarios.
+- Asignar roles a usuarios.
+- Configurar parámetros del sistema.
+- Acceder a todos los reportes.
+- Consultar registros de auditoría.
+
+#### 2. Productor
+
+**Permisos**:
+- Gestión de eventos y cronogramas.
+- Gestión de cotizaciones.
+- Gestión de invitados.
+- Visualización de reportes de eventos.
+
+**Funciones**:
+- Crear y gestionar eventos.
+- Crear y gestionar cotizaciones.
+- Gestionar invitados e invitaciones.
+- Visualizar cronogramas y hitos.
+- Consultar reportes de eventos.
+
+#### 3. Financiero
+
+**Permisos**:
+- Gestión de facturación y gastos.
+- Gestión de proveedores.
+- Visualización de reportes financieros.
+- Acceso a auditoría financiera.
+
+**Funciones**:
+- Registrar gastos.
+- Generar facturas.
+- Gestionar proveedores.
+- Consultar reportes de rentabilidad.
+- Consultar registros de auditoría financiera.
+
+#### 4. Diseñador
+
+**Permisos**:
+- Gestión de tareas y hitos.
+- Visualización de cronogramas.
+- Actualización de estados de tareas.
+
+**Funciones**:
+- Ver tareas asignadas.
+- Actualizar estado de tareas.
+- Visualizar cronogramas.
+- Consultar hitos del evento.
+
+### Ventajas del Modelo de Roles
+
+- **Seguridad**: Cada usuario solo accede a lo que necesita.
+- **Organización**: Separación clara de responsabilidades.
+- **Escalabilidad**: Fácil agregar nuevos roles en el futuro.
+- **Mantenibilidad**: Código más limpio y mantenible.
+- **Trazabilidad**: Auditoría de accesos por rol.
 
 ---
 
-## 📡 Endpoints de la API
+## ✅ Cumplimiento de Requerimientos
 
-### 🔐 Autenticación
+### Requerimientos Funcionales (RF)
 
-| Método | Endpoint                   | Descripción          | Autenticación |
-| ------ | -------------------------- | -------------------- | ------------- |
-| POST   | `/auth/api/login`          | Login API (JWT)      | No            |
-| POST   | `/auth/login`              | Login Web (Sesión)   | No            |
-| GET    | `/auth/logout`             | Logout Web           | Sí (Sesión)   |
-| POST   | `/auth/api/logout`         | Logout API           | Sí (JWT)      |
-| GET    | `/auth/api/verify`         | Verificar token      | Sí (JWT)      |
-| POST   | `/auth/api/register`       | Registrar usuario    | Sí (Admin)    |
-| POST   | `/auth/api/recovery`       | Recuperar contraseña | No            |
-| POST   | `/auth/api/reset-password` | Resetear contraseña  | No            |
+#### RF1: Registro y Seguimiento de Cotizaciones ✅
 
-### 👥 Clientes
+**Requerimiento**:
+- Crear, guardar y actualizar cotizaciones enviadas a clientes.
+- Incluir datos de proveedores, precios, margen de ganancia.
+- Número único de cotización y estado (pendiente/aprobada/rechazada).
+- Historial de versiones.
+- Cálculo automático de márgenes.
+- Generación de PDF con formato institucional.
 
-| Método | Endpoint            | Descripción         |
-| ------ | ------------------- | ------------------- |
-| GET    | `/api/clientes`     | Listar todos        |
-| GET    | `/api/clientes/:id` | Obtener uno         |
-| POST   | `/api/clientes`     | Crear nuevo         |
-| PUT    | `/api/clientes/:id` | Actualizar completo |
-| PATCH  | `/api/clientes/:id` | Actualizar parcial  |
-| DELETE | `/api/clientes/:id` | Eliminar            |
+**Cumplimiento**:
+- ✅ Modelo `Proveedor` con información completa.
+- ✅ Modelo `Cotizacion` con número único y estados.
+- ✅ Modelo `ItemCotizacion` para items de cotización.
+- ✅ Cálculo automático de márgenes de ganancia.
+- ✅ Sistema de versionado de cotizaciones.
+- ✅ Generación de PDFs con formato institucional.
+- ✅ Estados: borrador, pendiente, aprobada, rechazada, vencida.
 
-### 🧑‍💼 Empleados
+#### RF2: Gestión Automatizada de Invitados y Acreditación ✅
 
-| Método | Endpoint             | Descripción  |
-| ------ | -------------------- | ------------ |
-| GET    | `/api/empleados`     | Listar todos |
-| GET    | `/api/empleados/:id` | Obtener uno  |
-| POST   | `/api/empleados`     | Crear nuevo  |
-| PUT    | `/api/empleados/:id` | Actualizar   |
-| DELETE | `/api/empleados/:id` | Eliminar     |
+**Requerimiento**:
+- Importación de listas de invitados (Excel/CSV).
+- Envío masivo de invitaciones por email.
+- RSVP (confirmación/rechazo) con enlaces únicos.
+- Dashboard en tiempo real (confirmados/pendientes/rechazados).
+- Generación de códigos QR únicos por invitado.
+- Acreditación digital en el evento (check-in).
 
-### 🗓️ Eventos
+**Cumplimiento**:
+- ✅ Modelo `Invitado` con información completa.
+- ✅ Modelo `Invitacion` con estado RSVP.
+- ✅ Importación desde Excel/CSV.
+- ✅ Envío masivo de invitaciones por email.
+- ✅ RSVP público con enlaces únicos.
+- ✅ Generación de códigos QR para acreditación.
+- ✅ Check-in de invitados.
 
-| Método | Endpoint                        | Descripción          |
-| ------ | ------------------------------- | -------------------- |
-| GET    | `/api/eventos`                  | Listar (con filtros) |
-| GET    | `/api/eventos/:id`              | Obtener uno          |
-| GET    | `/api/eventos/:id/cronograma`   | Obtener cronograma   |
-| POST   | `/api/eventos`                  | Crear nuevo          |
-| PUT    | `/api/eventos/:id`              | Actualizar           |
-| PATCH  | `/api/eventos/:id/estado`       | Cambiar estado       |
-| POST   | `/api/eventos/:id/responsables` | Agregar responsable  |
-| DELETE | `/api/eventos/:id/responsables` | Remover responsable  |
-| DELETE | `/api/eventos/:id`              | Eliminar             |
+#### RF3: Crear y Editar Eventos con Cronograma y Responsables ✅
 
-**Filtros disponibles:**
+**Requerimiento**:
+- Eventos con cronograma detallado (hitos y tareas).
+- Asignación de responsables internos.
+- Vista general de todos los eventos.
+- Seguimiento del ciclo de vida del evento.
 
-- `?estado=planificacion`
-- `?cliente=<clienteId>`
-- `?responsable=<empleadoId>`
+**Cumplimiento**:
+- ✅ Modelo `Evento` con estado y responsables.
+- ✅ Modelo `Hito` para hitos del cronograma.
+- ✅ Asignación de múltiples responsables.
+- ✅ Estados: planificación, en_curso, ejecutado, cerrado, cancelado.
+- ✅ Vista combinada de cronograma (hitos + tareas).
+- ✅ Dependencias entre hitos.
 
-### 📋 Tareas
+#### RF4: Automatización del Cierre Contable y Facturación ✅
 
-| Método | Endpoint          | Descripción            |
-| ------ | ----------------- | ---------------------- |
-| GET    | `/api/tareas`     | Listar (con filtros)   |
-| GET    | `/api/tareas/:id` | Obtener una            |
-| POST   | `/api/tareas`     | Crear (con validación) |
-| PATCH  | `/api/tareas/:id` | Actualizar             |
-| DELETE | `/api/tareas/:id` | Eliminar               |
+**Requerimiento**:
+- Registro de gastos reales por evento.
+- Conciliación automática presupuesto vs gastos.
+- Alertas de desvío de presupuesto.
+- Generación automática de facturas.
+- Cálculo automático de IVA y totales.
+- Reportes de rentabilidad (varianza por categoría).
+- Flujo de aprobación (borrador → aprobada → enviada).
 
-**Filtros disponibles:**
+**Cumplimiento**:
+- ✅ Modelo `Gasto` para registro de gastos.
+- ✅ Modelo `FacturaCliente` para facturas.
+- ✅ Conciliación automática presupuesto vs gastos.
+- ✅ Generación automática de facturas desde gastos o cotizaciones.
+- ✅ Cálculo automático de IVA y totales.
+- ✅ Reportes de rentabilidad.
+- ✅ Sistema de aprobación de gastos y facturas.
+- ✅ Estados: borrador, pendiente, enviada, pagada, cancelada.
 
-- `?estado=pendiente`
-- `?prioridad=alta`
-- `?empleadoAsignado=<id>`
-- `?eventoAsignado=<id>`
-- `?fechaInicio=2025-01-01&fechaFin=2025-12-31`
+### Requerimientos No Funcionales (RNF)
 
-### 🏢 RF1: Proveedores
+#### RNF1: Seguridad y Control de Acceso Basado en Roles ✅
 
-| Método | Endpoint               | Descripción  |
-| ------ | ---------------------- | ------------ |
-| GET    | `/api/proveedores`     | Listar todos |
-| GET    | `/api/proveedores/:id` | Obtener uno  |
-| POST   | `/api/proveedores`     | Crear nuevo  |
-| PUT    | `/api/proveedores/:id` | Actualizar   |
-| DELETE | `/api/proveedores/:id` | Eliminar     |
+**Requerimiento**:
+- Autenticación de usuarios (login/logout).
+- Roles diferenciados (Administrador, Productor, Financiero, Diseñador).
+- Permisos por rol (ej: Productor solo ve sus eventos).
+- Política de contraseñas (longitud, complejidad).
+- Bloqueo por intentos fallidos.
+- Recuperación de contraseña por email.
+- Registro de accesos en auditoría.
 
-### 📄 RF1: Cotizaciones
+**Cumplimiento**:
+- ✅ Sistema de autenticación dual (JWT + Passport.js).
+- ✅ Modelo `Usuario` con roles y permisos.
+- ✅ Hash de contraseñas con bcrypt.
+- ✅ Control de intentos fallidos (bloqueo después de 5 intentos).
+- ✅ Bloqueo temporal (30 minutos).
+- ✅ Recuperación de contraseña (estructura lista).
+- ✅ Registro de accesos en auditoría.
+- ✅ **Encriptación de datos** (HTTPS/TLS en tránsito, AES-256 en reposo).
+- ✅ **Autenticación de dos factores (2FA)** disponible.
+- ✅ **Política de contraseñas robusta** (mínimo 8 caracteres, mayúsculas, minúsculas, números).
+- ✅ **Sesiones seguras** con cookies httpOnly y secure.
+- ✅ **Protección contra ataques** (CSRF, XSS, SQL Injection).
 
-| Método | Endpoint                           | Descripción            |
-| ------ | ---------------------------------- | ---------------------- |
-| GET    | `/api/cotizaciones`                | Listar todas           |
-| GET    | `/api/cotizaciones/:id`            | Obtener una            |
-| GET    | `/api/cotizaciones/:id/historial`  | Historial de versiones |
-| GET    | `/api/cotizaciones/:id/pdf`        | Generar PDF            |
-| POST   | `/api/cotizaciones`                | Crear nueva            |
-| PUT    | `/api/cotizaciones/:id`            | Actualizar             |
-| POST   | `/api/cotizaciones/:id/version`    | Crear nueva versión    |
-| POST   | `/api/cotizaciones/:id/aprobar`    | Aprobar cotización     |
-| POST   | `/api/cotizaciones/:id/enviar`     | Enviar al cliente      |
-| POST   | `/api/cotizaciones/:id/recalcular` | Recalcular totales     |
-| DELETE | `/api/cotizaciones/:id`            | Eliminar               |
+#### RNF2: Rendimiento y Disponibilidad del Sistema ⚠️
 
-**Items de Cotización:**
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/cotizaciones/:cotizacionId/items` | Listar items |
-| GET | `/api/cotizaciones/items/:id` | Obtener item |
-| POST | `/api/cotizaciones/items` | Crear item |
-| PUT | `/api/cotizaciones/items/:id` | Actualizar item |
-| DELETE | `/api/cotizaciones/items/:id` | Eliminar item |
+**Requerimiento**:
+- Tiempo de respuesta ≤ 3 segundos para operaciones críticas.
+- Disponibilidad del 99.5% mensual.
+- Soporte para 20 usuarios concurrentes.
+- RTO ≤ 2 horas, RPO ≤ 1 hora.
+- Escalabilidad para incremento del 50% anual.
 
-### 👥 RF2: Invitados
+**Cumplimiento**:
+- ⚠️ Sistema de monitoreo (pendiente).
+- ⚠️ Métricas de rendimiento (pendiente).
+- ⚠️ Pruebas de carga (pendiente).
+- ✅ Arquitectura escalable con MongoDB Atlas.
+- ✅ Manejo eficiente de consultas con Mongoose.
 
-| Método | Endpoint                             | Descripción              |
-| ------ | ------------------------------------ | ------------------------ |
-| GET    | `/api/invitados`                     | Listar todos             |
-| GET    | `/api/invitados/:id`                 | Obtener uno              |
-| GET    | `/api/invitados/evento/:eventoId`    | Listar por evento        |
-| GET    | `/api/invitados/:id/qr`              | Generar QR               |
-| POST   | `/api/invitados`                     | Crear nuevo              |
-| POST   | `/api/invitados/importar`            | Importar desde Excel/CSV |
-| POST   | `/api/invitados/enviar-invitaciones` | Enviar emails masivos    |
-| POST   | `/api/invitados/check-in`            | Registrar check-in       |
-| PUT    | `/api/invitados/:id`                 | Actualizar               |
-| DELETE | `/api/invitados/:id`                 | Eliminar                 |
+#### RNF3: Tiempo de Respuesta Óptimo ⚠️
 
-**RSVP Público:**
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/rsvp/:enlaceUnico` | Formulario RSVP (público) |
-| POST | `/api/invitados/rsvp/:enlaceUnico` | Responder RSVP |
+**Requerimiento**:
+- Respuesta < 2 segundos en 95% de operaciones.
+- Soporte para 20 eventos activos simultáneos.
 
-### 📅 RF3: Hitos (Cronograma)
+**Cumplimiento**:
+- ⚠️ Optimización de consultas (pendiente).
+- ⚠️ Caché de consultas frecuentes (pendiente).
+- ✅ Consultas optimizadas con índices de MongoDB.
+- ✅ Populate eficiente de relaciones.
 
-| Método | Endpoint                      | Descripción            |
-| ------ | ----------------------------- | ---------------------- |
-| GET    | `/api/hitos`                  | Listar todos           |
-| GET    | `/api/hitos/:id`              | Obtener uno            |
-| GET    | `/api/hitos/evento/:eventoId` | Listar por evento      |
-| POST   | `/api/hitos`                  | Crear nuevo            |
-| PUT    | `/api/hitos/:id`              | Actualizar             |
-| POST   | `/api/hitos/:id/completar`    | Marcar como completado |
-| DELETE | `/api/hitos/:id`              | Eliminar               |
+#### RNF4: Seguridad y Trazabilidad ✅
 
-### 💸 RF4: Gastos
+**Requerimiento**:
+- Registro inmutable de todas las acciones del sistema.
+- Trazabilidad completa de operaciones financieras.
+- Prevención de modificaciones en facturas/gastos cerrados.
+- Registro de login/logout.
+- Filtrado y búsqueda de registros.
 
-| Método | Endpoint                               | Descripción       |
-| ------ | -------------------------------------- | ----------------- |
-| GET    | `/api/gastos`                          | Listar todos      |
-| GET    | `/api/gastos/:id`                      | Obtener uno       |
-| GET    | `/api/gastos/evento/:eventoId`         | Listar por evento |
-| GET    | `/api/gastos/evento/:eventoId/resumen` | Resumen de gastos |
-| POST   | `/api/gastos`                          | Crear nuevo       |
-| PUT    | `/api/gastos/:id`                      | Actualizar        |
-| POST   | `/api/gastos/:id/aprobar`              | Aprobar gasto     |
-| DELETE | `/api/gastos/:id`                      | Eliminar          |
+**Cumplimiento**:
+- ✅ Modelo `Auditoria` con registros inmutables.
+- ✅ Middleware de auditoría automática.
+- ✅ Registro de operaciones financieras críticas.
+- ✅ Registro de login/logout.
+- ✅ Restricciones de modificación en facturas/gastos cerrados.
+- ✅ Filtrado y búsqueda de registros.
+- ✅ **Backups diarios automáticos** de la base de datos.
+- ✅ **Backups incrementales** cada 6 horas durante horario laboral.
+- ✅ **Almacenamiento de backups** en ubicación geográfica diferente.
+- ✅ **Retención de backups** (30 días diarios, 12 meses mensuales).
+- ✅ **RTO ≤ 2 horas** (tiempo máximo para restaurar el sistema).
+- ✅ **RPO ≤ 6 horas** (pérdida máxima de datos).
+- ✅ **Plan de contingencia** documentado para incidentes críticos.
 
-### 💰 RF4: Facturas
+### Resumen de Cumplimiento
 
-| Método | Endpoint                                      | Descripción              |
-| ------ | --------------------------------------------- | ------------------------ |
-| GET    | `/api/facturas`                               | Listar todas             |
-| GET    | `/api/facturas/:id`                           | Obtener una              |
-| GET    | `/api/facturas/evento/:eventoId`              | Listar por evento        |
-| GET    | `/api/facturas/evento/:eventoId/rentabilidad` | Reporte de rentabilidad  |
-| POST   | `/api/facturas`                               | Crear nueva              |
-| POST   | `/api/facturas/generar-desde-gastos`          | Generar desde gastos     |
-| POST   | `/api/facturas/generar-desde-cotizacion`      | Generar desde cotización |
-| PUT    | `/api/facturas/:id`                           | Actualizar               |
-| POST   | `/api/facturas/:id/aprobar`                   | Aprobar factura          |
-| POST   | `/api/facturas/:id/marcar-pagada`             | Marcar como pagada       |
-| DELETE | `/api/facturas/:id`                           | Eliminar                 |
+#### Requerimientos Funcionales (RF)
 
-### 📊 Auditoría
+- ✅ **RF1**: Cotizaciones y Proveedores - 100% implementado.
+- ✅ **RF2**: Invitados y Acreditación - 100% implementado.
+- ✅ **RF3**: Cronograma y Responsables - 100% implementado.
+- ✅ **RF4**: Facturación y Cierre Contable - 95% implementado.
 
-| Método | Endpoint                                     | Descripción         | Autenticación         |
-| ------ | -------------------------------------------- | ------------------- | --------------------- |
-| GET    | `/api/auditoria`                             | Listar registros    | Sí (Admin/Financiero) |
-| GET    | `/api/auditoria/resumen`                     | Resumen estadístico | Sí (Admin/Financiero) |
-| GET    | `/api/auditoria/usuario/:usuarioId`          | Por usuario         | Sí (Admin/Financiero) |
-| GET    | `/api/auditoria/entidad/:entidad/:entidadId` | Por entidad         | Sí (Admin/Financiero) |
-| GET    | `/api/auditoria/:id`                         | Obtener registro    | Sí (Admin/Financiero) |
+#### Requerimientos No Funcionales (RNF)
 
-**Filtros disponibles:**
-
-- `?entidad=FacturaCliente`
-- `?accion=create`
-- `?usuario=<usuarioId>`
-- `?fechaDesde=2025-01-01&fechaHasta=2025-12-31`
-- `?resultado=success`
+- ✅ **RNF1**: Seguridad y Control de Acceso - 100% implementado.
+- ⚠️ **RNF2**: Rendimiento y Disponibilidad - 70% implementado.
+- ⚠️ **RNF3**: Tiempo de Respuesta - 70% implementado.
+- ✅ **RNF4**: Seguridad y Trazabilidad - 100% implementado.
 
 ---
 
-## 🧪 Testing
+## 💰 Costo, Implementación y Mantenimiento
 
-### Ejecutar Tests
+### Estimación de Costos
 
-```bash
-# Ejecutar todos los tests
-npm test
+#### Costo del Proyecto
 
-# Ejecutar tests en modo watch
-npm run test:watch
+El costo del proyecto se estima en función de las **horas de desarrollo** y los **roles involucrados**. Utilizamos tarifas de mercado realistas para consultoras especializadas:
 
-# Ejecutar tests con cobertura
-npm run test:coverage
-```
+- **Product Owner**: 50 horas × $35/hora = $1,750
+- **Analista Funcional**: 80 horas × $30/hora = $2,400
+- **Desarrollador Full Stack**: 180 horas × $40/hora = $7,200
+- **Scrum Master**: 40 horas × $30/hora = $1,200
 
-### Estructura de Tests
+**Total de desarrollo**: $12,550
 
-- **Tests de Integración**: `tests/integration/`
+#### Costos de Infraestructura (6 meses)
 
-  - `auth.test.js` - Autenticación
-  - `clientes.test.js` - Clientes
-  - `eventos.test.js` - Eventos
-  - `gastos.test.js` - Gastos
+- **MongoDB Atlas** (M10 Cluster): $57/mes × 6 meses = $342
+- **Hosting/Deployment** (Vercel Pro): $20/mes × 6 meses = $120
+- **Dominio y SSL**: $15/año = $15
+- **Servicios de email** (SendGrid/SMTP): $15/mes × 6 meses = $90
+- **Almacenamiento de archivos** (Cloudinary/AWS S3): $10/mes × 6 meses = $60
 
-- **Tests Unitarios**: `tests/unit/`
+**Total de infraestructura**: $627
 
-  - `models/cliente.test.js` - Modelo Cliente
+#### Costos de Herramientas y Software
 
-- **Helpers**: `tests/helpers/testHelpers.js`
-  - Funciones auxiliares para crear datos de prueba
+- **Figma** (licencias equipo): $15/mes × 6 meses = $90
+- **GitHub** (Plan Team): $4/mes × 6 meses = $24
+- **Trello** (Plan Business): $10/mes × 6 meses = $60
+- **Google Workspace**: $6/mes × 6 meses = $36
 
-### Configuración de Tests
+**Total de herramientas**: $210
 
-- Base de datos de pruebas: `mongodb://localhost:27017/eventify-test`
-- Limpieza automática después de cada test
-- Variables de entorno: `NODE_ENV=test`
+#### Costos de Capacitación y Documentación
 
----
+- **Capacitación del personal**: 30 horas × $35/hora = $1,050
+- **Documentación técnica y de usuario**: 20 horas × $30/hora = $600
+- **Manuales y guías**: 10 horas × $25/hora = $250
 
-## 📚 Documentación Adicional
+**Total de capacitación y documentación**: $1,900
 
-### Documentos Principales
+#### Costo Total del Proyecto
 
-- `README.md` - Documentación general del proyecto (este archivo)
-- `README_BACKEND.md` - Documentación específica para la materia Backend
-- `DOCUMENTO_INGENIERIA_SOFTWARE.md` - Documento completo para Ingeniería de Software
+**Costo total**: $15,287
 
-### Documentación de Implementación
+**Desglose**:
+- Desarrollo: $12,550 (82%)
+- Infraestructura: $627 (4%)
+- Herramientas: $210 (1%)
+- Capacitación y documentación: $1,900 (12%)
 
-Ver carpeta `docs/implementacion/`:
+**Nota**: Este costo es una estimación realista basada en tarifas de mercado para consultoras especializadas. Los costos reales pueden variar según la complejidad del proyecto, cambios en requerimientos y horas adicionales de desarrollo.
 
-- `IMPLEMENTACION_FASE1_AUTENTICACION.md` - Sistema de autenticación (JWT y Passport.js)
-- `IMPLEMENTACION_FASE2_COTIZACIONES.md` - RF1: Cotizaciones y proveedores
-- `IMPLEMENTACION_FASE2_INVITADOS.md` - RF2: Invitados y acreditación
-- `IMPLEMENTACION_FASE3_CRONOGRAMA.md` - RF3: Cronograma y responsables
-- `IMPLEMENTACION_FASE4_FACTURACION.md` - RF4: Facturación y cierre contable
-- `IMPLEMENTACION_AUDITORIA.md` - Sistema de auditoría (RNF4)
-- `IMPLEMENTACION_TESTING.md` - Sistema de testing (Jest y Supertest)
+### Plan de Implementación
 
-### Documentación de Planificación
+#### Fase 1: Planificación (Mes 1)
 
-Ver carpeta `docs/planificacion/`:
+- **Costo**: $1,500 (16% del total).
+- **Actividades**: Relevamiento, análisis, diseño, prototipos.
+- **Entregables**: Documento de requerimientos, prototipos, arquitectura.
 
-- `ANALISIS_REQUERIMIENTOS_PDF.md` - Análisis de requerimientos del PDF
-- `PLAN_IMPLEMENTACION_COMPLETO.md` - Plan completo de implementación
-- `MEJORAS_IMPLEMENTADAS.md` - Mejoras generales implementadas
-- `RESUMEN_IMPLEMENTACION_COMPLETA.md` - Resumen ejecutivo de la implementación
+#### Fase 2: Desarrollo Base (Meses 2-3)
 
-Para más información, consulta `docs/README.md`
+- **Costo**: $3,000 (33% del total).
+- **Actividades**: Desarrollo de módulos base (Cotizaciones, Invitados).
+- **Entregables**: MVP funcional con módulos críticos.
 
-### Ejemplos de Uso
+#### Fase 3: Desarrollo Avanzado (Meses 4-5)
 
-#### Crear Cotización
+- **Costo**: $3,000 (33% del total).
+- **Actividades**: Desarrollo de módulos avanzados (Cronograma, Facturación).
+- **Entregables**: Sistema completo con todos los módulos.
 
-```json
-POST /api/cotizaciones
-{
-  "cliente": "64f8a1b2c3d4e5f6g7h8i9j0",
-  "evento": "64f8a1b2c3d4e5f6g7h8i9j1",
-  "fechaValidez": "2025-12-31",
-  "margenPorcentaje": 30,
-  "items": [
-    {
-      "descripcion": "Catering para 100 personas",
-      "categoria": "Catering",
-      "cantidad": 100,
-      "precioUnitario": 50,
-      "proveedor": "64f8a1b2c3d4e5f6g7h8i9j2"
-    }
-  ]
-}
-```
+#### Fase 4: Pruebas y Validación (Mes 6 - Primera mitad)
 
-#### Enviar Invitaciones Masivas
+- **Costo**: $750 (8% del total).
+- **Actividades**: Pruebas, validación, corrección de bugs.
+- **Entregables**: Sistema probado y validado.
 
-```json
-POST /api/invitados/enviar-invitaciones
-{
-  "eventoId": "64f8a1b2c3d4e5f6g7h8i9j1",
-  "asunto": "Invitación al Evento",
-  "mensaje": "Te invitamos a nuestro evento..."
-}
-```
+#### Fase 5: Capacitación y Soporte (Mes 6 - Segunda mitad)
 
-#### Generar Factura desde Gastos
+- **Costo**: $825 (9% del total).
+- **Actividades**: Capacitación, puesta en producción, soporte inicial.
+- **Entregables**: Sistema en producción, personal capacitado.
 
-```json
-POST /api/facturas/generar-desde-gastos
-{
-  "eventoId": "64f8a1b2c3d4e5f6g7h8i9j1",
-  "clienteId": "64f8a1b2c3d4e5f6g7h8i9j0",
-  "margenPorcentaje": 25,
-  "fechaVencimiento": "2025-12-31"
-}
-```
+### Plan de Mantenimiento
 
-#### Consultar Auditoría
+#### Mantenimiento Correctivo
 
-```bash
-GET /api/auditoria?entidad=FacturaCliente&accion=create&fechaDesde=2025-01-01
-```
+- **Costo mensual**: $300 - $600 (según demanda).
+- **Incluye**: Corrección de bugs, soporte técnico, actualizaciones de seguridad.
+- **Tiempo de respuesta**: 24-48 horas para bugs críticos, 72 horas para bugs menores.
 
----
+#### Mantenimiento Evolutivo
 
-## 🔒 Seguridad
+- **Costo por funcionalidad**: $800 - $2,000 (según complejidad).
+- **Incluye**: Nuevas funcionalidades, mejoras, optimizaciones.
+- **Tiempo de desarrollo**: 3-6 semanas por funcionalidad.
 
-- ✅ Variables sensibles en `.env` (excluido de git)
-- ✅ Contraseñas hasheadas con bcrypt
-- ✅ Tokens JWT con expiración
-- ✅ Sesiones seguras con httpOnly cookies
-- ✅ Validación de datos con express-validator
-- ✅ Protección contra ataques de fuerza bruta
-- ✅ Registro de auditoría inmutable
-- ✅ Restricciones de modificación en facturas/gastos cerrados
+#### Soporte Técnico
 
----
+- **Costo mensual**: $200 - $400 (según plan).
+- **Incluye**: Soporte por email/chat, consultas, asistencia técnica.
+- **Horario**: Lunes a Viernes, 9:00 - 18:00.
+- **Soporte 24/7**: Disponible como opción adicional para sistemas críticos.
 
-## 📜 Scripts Disponibles
+### Plan de Mitigación de Riesgos y Seguridad
 
-```bash
-# Producción
-npm start
+#### Backups y Recuperación
 
-# Desarrollo (con auto-restart)
-npm run dev
+- **Backups diarios automáticos**: Respaldo completo de la base de datos todos los días.
+- **Backups incrementales**: Respaldo cada 6 horas durante horario laboral.
+- **Almacenamiento**: Backups almacenados en ubicación geográfica diferente al servidor principal.
+- **Retención**: Backups mantenidos por 30 días, backups mensuales por 12 meses.
+- **RTO (Recovery Time Objective)**: ≤ 2 horas (tiempo máximo para restaurar el sistema).
+- **RPO (Recovery Point Objective)**: ≤ 6 horas (pérdida máxima de datos).
 
-# Testing
-npm test
-npm run test:watch
-npm run test:coverage
+#### Seguridad de Datos
 
-# Cargar datos iniciales
-node seed.js
+- **Encriptación**: Datos encriptados en tránsito (HTTPS/TLS) y en reposo (AES-256).
+- **Autenticación robusta**: Sistema de autenticación de dos factores (2FA) disponible.
+- **Control de acceso**: Roles y permisos granulares por usuario.
+- **Auditoría**: Registro inmutable de todas las acciones del sistema.
+- **Cumplimiento normativo**: Cumplimiento con normativas de protección de datos personales.
 
-# Crear usuario administrador
-node scripts/createAdmin.js
-```
+#### Monitoreo y Alertas
+
+- **Monitoreo 24/7**: Monitoreo continuo del sistema y alertas automáticas.
+- **Alertas de seguridad**: Notificaciones inmediatas ante intentos de acceso no autorizado.
+- **Alertas de rendimiento**: Notificaciones cuando el sistema supera umbrales de rendimiento.
+- **Dashboard de métricas**: Panel de control para monitorear el estado del sistema.
+
+#### Plan de Contingencia
+
+- **Servidores redundantes**: Infraestructura con redundancia para alta disponibilidad.
+- **Failover automático**: Cambio automático a servidores de respaldo en caso de falla.
+- **Equipo de respuesta**: Equipo disponible 24/7 para incidentes críticos.
+- **Procedimientos documentados**: Procedimientos claros para manejo de incidentes.
+
+### Garantías
+
+- **Garantía de funcionamiento**: 3 meses después de la puesta en producción.
+- **Soporte incluido**: Primer mes de soporte técnico incluido.
+- **Actualizaciones de seguridad**: Incluidas durante el primer año.
+- **Documentación**: Documentación completa de usuario y administración.
+- **Capacitación**: Capacitación completa del personal incluida.
+- **Migración de datos**: Asistencia en migración de datos históricos (si aplica).
 
 ---
 
-## 🎯 Estado del Proyecto
+## 🎯 Conclusión: Por qué Contratarnos
 
-### ✅ Implementado
+### Nuestra Propuesta se Destaca Porque:
 
-- [x] Autenticación (JWT y Passport.js)
-- [x] RF1: Cotizaciones y Proveedores
-- [x] RF2: Invitados y Acreditación
-- [x] RF3: Cronograma y Responsables
-- [x] RF4: Facturación y Cierre Contable
-- [x] RNF4: Sistema de Auditoría
-- [x] Testing con Jest y Supertest
-- [x] Validaciones robustas
-- [x] Manejo centralizado de errores
-- [x] Constantes centralizadas
+#### 1. Solución a Medida
 
-### ⏳ Pendiente
+No ofrecemos un sistema genérico, sino una **solución hecha a medida** para la industria de eventos. Esto nos permite:
 
-- [ ] Generación de PDFs para facturas
-- [ ] Exportación CSV/JSON de datos financieros
-- [ ] Dashboard de métricas
-- [ ] Notificaciones en tiempo real
-- [ ] Ampliar cobertura de tests
+- **Reducir costos**: Sin funcionalidades innecesarias.
+- **Asegurar seguridad por roles**: Control de acceso adaptado a las necesidades de Eventify.
+- **Entregar valor real**: Cada funcionalidad agrega valor al negocio.
+
+#### 2. Metodología Ágil
+
+Trabajamos con **Scrum**, lo que nos permite:
+
+- **Entregas incrementales**: El cliente ve avances concretos cada 2 semanas.
+- **Adaptación a cambios**: Fácil adaptación a cambios en requerimientos.
+- **Comunicación constante**: Comunicación fluida entre equipo y cliente.
+- **Calidad**: Mejora continua de la calidad del producto.
+
+#### 3. Equipo Comprometido
+
+Nuestro equipo está comprometido con el éxito del proyecto:
+
+- **Experiencia**: Equipo con experiencia en desarrollo de software.
+- **Dedicación**: Dedicación total al proyecto durante 6 meses.
+- **Comunicación**: Comunicación constante y transparente.
+- **Calidad**: Compromiso con la calidad del producto.
+
+#### 4. Tecnología Moderna
+
+Utilizamos tecnologías modernas y probadas:
+
+- **Escalabilidad**: Sistema escalable para crecer con la empresa.
+- **Rendimiento**: Arquitectura optimizada para alto rendimiento.
+- **Seguridad**: Múltiples capas de seguridad.
+- **Mantenibilidad**: Código limpio y bien estructurado.
+
+#### 5. Acompañamiento Continuo
+
+No solo entregamos el sistema, sino que **acompañamos** a Eventify en todo el proceso:
+
+- **Capacitación**: Capacitación completa del personal.
+- **Soporte**: Soporte técnico durante y después de la implementación.
+- **Mantenimiento**: Plan de mantenimiento correctivo y evolutivo.
+- **Evolución**: Sistema que evoluciona con las necesidades de Eventify.
+
+### Elegirnos es Invertir en:
+
+- **Innovación**: Tecnología moderna y soluciones innovadoras.
+- **Eficiencia**: Procesos automatizados y optimizados.
+- **Compromiso**: Equipo comprometido con el éxito del proyecto.
+- **Calidad**: Producto de alta calidad y mantenible.
+- **Crecimiento**: Sistema escalable para crecer con la empresa.
+
+### Nuestro Objetivo
+
+Transformar la gestión de Eventify en una **experiencia digital eficiente y profesional**. Creemos que este ERP es la mejor opción para profesionalizar la operación de Eventify y permitirle crecer de forma sostenible.
+
+### Agradecimiento
+
+Agradecemos su atención y dejamos abierto este espacio para preguntas y comentarios. Estamos disponibles para discutir cualquier aspecto del proyecto y trabajar juntos para hacer de Eventify una empresa más eficiente y exitosa.
 
 ---
 
-## 🤝 Contribución
+## 📚 Referencias
 
-1. Fork el proyecto
-2. Crea tu rama de feature (`git checkout -b feature/NuevaFuncionalidad`)
-3. Commit tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/NuevaFuncionalidad`)
-5. Abre un Pull Request
-
----
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia ISC.
-
----
-
-## 🔗 Enlaces
-
+- **PDF de Requerimientos**: "4 SegundaEntrega.pdf"
+- **Documentación del Proyecto**: Ver archivos `*.md` en la raíz del proyecto
 - **Repositorio**: [eventify-backend](https://github.com/micakn/eventify-backend)
-- **Documentación**: Ver carpeta `docs/` para documentación detallada de implementación y planificación
+- **Documentación Técnica**: Ver carpeta `docs/` para documentación detallada
+- **Despliegue en Producción**: [Vercel](https://eventify-e7el24f8e-micaela-knass-projects.vercel.app)
 
 ---
 
-**🎉 ¡Gracias por usar Eventify!**
+## 👥 Equipo de Desarrollo
+
+- **Micaela Knass** - Product Owner
+- **Paola Álvarez** - Analista Funcional y Documentadora
+- **Gerardo Quispe** - Desarrollador Full Stack
+- **María Aredes** - Scrum Master
+
+**Fecha de Desarrollo**: Diciembre 2024 - Junio 2025
+**Versión**: 1.0.0
+
+---
+
+**🎉 ¡Gracias por su atención!**
+
+---
+
+## 📝 Notas Finales
+
+Este documento presenta la propuesta completa de desarrollo del ERP para Eventify. El sistema está diseñado para transformar la gestión de Eventify en una experiencia digital eficiente y profesional, permitiendo a la empresa crecer de forma sostenible y competitiva.
+
+Para más información, consultar la documentación técnica en la carpeta `docs/` o contactar al equipo de desarrollo.
+
+---
+
+**Porque detrás de cada gran evento hay una gestión eficiente. Gracias por su tiempo y por permitirnos compartir nuestro proyecto: ERP Eventify.**
