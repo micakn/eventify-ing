@@ -24,7 +24,7 @@ html(lang="es")
               if user
                 .mt-3
                   small.text-muted
-                    | #{user.empleado?.nombre || user.email}
+                    | #{(user.empleado && user.empleado.nombre) || user.email}
                     br
                     span.badge.bg-secondary= user.rol
               hr
