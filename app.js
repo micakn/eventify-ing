@@ -66,27 +66,37 @@ const sessionConfig = {
   }
 };
 
-// Solo usar MongoStore si MONGODB_URI está disponible y es una cadena no vacía
+// Validar MONGODB_URI ANTES de intentar crear MongoStore
+// Esto previene el error "You must provide either mongoUrl|clientPromise|client in options"
 const mongoUri = process.env.MONGODB_URI;
-if (mongoUri && typeof mongoUri === 'string' && mongoUri.trim().length > 0) {
+let hasValidMongoUri = false;
+let trimmedUri = '';
+
+// Validación exhaustiva
+if (mongoUri && typeof mongoUri === 'string') {
+  trimmedUri = mongoUri.trim();
+  if (trimmedUri.length > 0 && 
+      (trimmedUri.startsWith('mongodb://') || trimmedUri.startsWith('mongodb+srv://'))) {
+    hasValidMongoUri = true;
+  }
+}
+
+// Solo crear MongoStore si hay una URI válida
+if (hasValidMongoUri) {
   try {
-    // Validar que la URI tenga el formato correcto
-    if (mongoUri.startsWith('mongodb://') || mongoUri.startsWith('mongodb+srv://')) {
-      sessionConfig.store = MongoStore.create({
-        mongoUrl: mongoUri,
-        ttl: 14 * 24 * 60 * 60 // 14 días
-      });
-      console.log('✅ MongoStore configurado para sesiones');
-    } else {
-      console.warn('⚠️  MONGODB_URI no tiene un formato válido, usando sesiones en memoria');
-    }
+    sessionConfig.store = MongoStore.create({
+      mongoUrl: trimmedUri,
+      ttl: 14 * 24 * 60 * 60 // 14 días
+    });
+    console.log('✅ MongoStore configurado para sesiones');
   } catch (error) {
     console.warn('⚠️  No se pudo crear MongoStore, usando sesiones en memoria:', error.message);
     console.warn('Stack:', error.stack);
     // Continuar sin store (sesiones en memoria)
   }
 } else {
-  console.warn('⚠️  MONGODB_URI no está configurada, usando sesiones en memoria');
+  console.warn('⚠️  MONGODB_URI no está configurada o es inválida, usando sesiones en memoria');
+  // No crear MongoStore - usar sesiones en memoria
 }
 
 app.use(session(sessionConfig));
