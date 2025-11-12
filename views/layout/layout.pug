@@ -1,0 +1,128 @@
+//- views/layout/layout.pug
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title || 'Eventify - Sistema de Gestión'
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", rel="stylesheet")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css")
+    link(rel="stylesheet", href="/css/style.css")
+    block styles
+
+  body
+    //- Wrapper flex para sticky footer
+    .main-wrapper.d-flex.flex-column.min-vh-100
+      .container-fluid.flex-grow-1
+        .row
+          //- Sidebar
+          .col-md-3.col-lg-2.sidebar.p-3
+            .text-center.mb-4
+              h4 
+                i.bi.bi-calendar-event.text-primary.me-2
+                | Eventify
+              if user
+                .mt-3
+                  small.text-muted
+                    | #{user.empleado?.nombre || user.email}
+                    br
+                    span.badge.bg-secondary= user.rol
+              hr
+            
+            ul.nav.flex-column
+              li.nav-item
+                a.nav-link(class=(currentPath === '/' ? 'active' : ''), href="/")
+                  i.bi.bi-house.me-2
+                  | Inicio
+              
+              //- Gestión Básica
+              li.nav-item.mt-2
+                small.text-muted.text-uppercase.fw-bold Gestión Básica
+              li.nav-item
+                a.nav-link(class=(currentPath === '/clientes' ? 'active' : ''), href="/clientes")
+                  i.bi.bi-people-fill.me-2
+                  | Clientes
+              li.nav-item
+                a.nav-link(class=(currentPath === '/empleados' ? 'active' : ''), href="/empleados")
+                  i.bi.bi-person-badge.me-2
+                  | Empleados
+              li.nav-item
+                a.nav-link(class=(currentPath === '/eventos' ? 'active' : ''), href="/eventos")
+                  i.bi.bi-calendar-event.me-2
+                  | Eventos
+              li.nav-item
+                a.nav-link(class=(currentPath === '/tareas' ? 'active' : ''), href="/tareas")
+                  i.bi.bi-list-task.me-2
+                  | Tareas
+              
+              //- RF1: Cotizaciones
+              li.nav-item.mt-2
+                small.text-muted.text-uppercase.fw-bold Cotizaciones
+              li.nav-item
+                a.nav-link(class=(currentPath === '/proveedores' ? 'active' : ''), href="/proveedores")
+                  i.bi.bi-building.me-2
+                  | Proveedores
+              li.nav-item
+                a.nav-link(class=(currentPath === '/cotizaciones' ? 'active' : ''), href="/cotizaciones")
+                  i.bi.bi-file-earmark-text.me-2
+                  | Cotizaciones
+              
+              //- RF2: Invitados
+              li.nav-item.mt-2
+                small.text-muted.text-uppercase.fw-bold Invitados
+              li.nav-item
+                a.nav-link(class=(currentPath === '/invitados' ? 'active' : ''), href="/invitados")
+                  i.bi.bi-person-check.me-2
+                  | Invitados
+              
+              //- RF3: Cronograma
+              li.nav-item.mt-2
+                small.text-muted.text-uppercase.fw-bold Cronograma
+              li.nav-item
+                a.nav-link(class=(currentPath === '/hitos' ? 'active' : ''), href="/hitos")
+                  i.bi.bi-calendar-check.me-2
+                  | Hitos
+              
+              //- RF4: Facturación
+              li.nav-item.mt-2
+                small.text-muted.text-uppercase.fw-bold Facturación
+              li.nav-item
+                a.nav-link(class=(currentPath === '/gastos' ? 'active' : ''), href="/gastos")
+                  i.bi.bi-cash-stack.me-2
+                  | Gastos
+              li.nav-item
+                a.nav-link(class=(currentPath === '/facturas' ? 'active' : ''), href="/facturas")
+                  i.bi.bi-receipt.me-2
+                  | Facturas
+              
+              //- Auditoría (solo admin/financiero)
+              if user && (user.rol === 'administrador' || user.rol === 'financiero')
+                li.nav-item.mt-2
+                  small.text-muted.text-uppercase.fw-bold Auditoría
+                li.nav-item
+                  a.nav-link(class=(currentPath === '/auditoria' ? 'active' : ''), href="/auditoria")
+                    i.bi.bi-shield-check.me-2
+                    | Auditoría
+              
+              //- Logout
+              if user
+                li.nav-item.mt-3
+                  a.nav-link.text-danger(href="/auth/logout")
+                    i.bi.bi-box-arrow-right.me-2
+                    | Cerrar Sesión
+
+          //- Main Content
+          .col-md-9.col-lg-10.main-content.p-4
+            block content
+
+      //- Footer pegado abajo
+      footer.bg-dark.text-white.py-3.mt-auto
+        .container
+          .row
+            .col-md-6
+              p.mb-0 © 2025 Eventify - Sistema de Gestión de Eventos
+            .col-md-6.text-md-end
+              small Versión 1.0.0
+
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+    block scripts

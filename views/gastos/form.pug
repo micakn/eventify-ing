@@ -1,0 +1,64 @@
+//- views/gastos/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-8
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Gasto'
+          .card-body
+            form(method="POST", action=formAction)
+              .mb-3
+                label.form-label(for="evento") Evento *
+                select.form-select#evento(name="evento", required)
+                  option(value="") Seleccionar evento
+                  each evento in eventos || []
+                    option(value=evento.id, selected=(gasto && gasto.evento && (gasto.evento.id || gasto.evento) === evento.id))= evento.nombre
+              
+              .mb-3
+                label.form-label(for="proveedor") Proveedor
+                select.form-select#proveedor(name="proveedor")
+                  option(value="") Sin proveedor
+                  each proveedor in proveedores || []
+                    option(value=proveedor.id, selected=(gasto && gasto.proveedor && (gasto.proveedor.id || gasto.proveedor) === proveedor.id))= proveedor.nombre
+              
+              .mb-3
+                label.form-label(for="descripcion") Descripción *
+                input.form-control#descripcion(type="text", name="descripcion", value=gasto ? gasto.descripcion : '', required)
+              
+              .mb-3
+                label.form-label(for="categoria") Categoría
+                input.form-control#categoria(type="text", name="categoria", value=gasto ? gasto.categoria : '')
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="monto") Monto *
+                    input.form-control#monto(type="number", name="monto", step="0.01", value=gasto ? gasto.monto : '0', required)
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="iva") IVA
+                    input.form-control#iva(type="number", name="iva", step="0.01", value=gasto ? gasto.iva : '0')
+              
+              .mb-3
+                label.form-label(for="fecha") Fecha
+                input.form-control#fecha(type="date", name="fecha", value=gasto ? new Date(gasto.fecha).toISOString().slice(0, 10) : '')
+              
+              .mb-3
+                label.form-label(for="estado") Estado
+                select.form-select#estado(name="estado")
+                  option(value="pendiente", selected=(gasto && gasto.estado === 'pendiente')) Pendiente
+                  option(value="aprobado", selected=(gasto && gasto.estado === 'aprobado')) Aprobado
+                  option(value="pagado", selected=(gasto && gasto.estado === 'pagado')) Pagado
+                  option(value="cancelado", selected=(gasto && gasto.estado === 'cancelado')) Cancelado
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = gasto ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/gastos")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar
+

@@ -1,0 +1,70 @@
+//- views/facturas/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-receipt.me-2
+        | Gestión de Facturas
+      p.text-muted Administra las facturas a clientes
+
+  .card.mb-4
+    .card-body
+      form.row.g-3(method="GET", action="/facturas")
+        .col-md-4
+          label.form-label Estado
+          select.form-select(name="estado")
+            option(value="") Todos
+            option(value="borrador", selected=(filtros && filtros.estado === 'borrador')) Borrador
+            option(value="pendiente", selected=(filtros && filtros.estado === 'pendiente')) Pendiente
+            option(value="enviada", selected=(filtros && filtros.estado === 'enviada')) Enviada
+            option(value="pagada", selected=(filtros && filtros.estado === 'pagada')) Pagada
+        .col-md-4
+          label.form-label Cliente
+          select.form-select(name="cliente")
+            option(value="") Todos
+            each cliente in clientes || []
+              option(value=cliente.id, selected=(filtros && filtros.cliente === cliente.id))= cliente.nombre
+        .col-md-4
+          label.form-label &nbsp;
+          button.btn.btn-primary.w-100(type="submit") Filtrar
+
+  .card
+    .card-body
+      if facturas && facturas.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Número
+                th Cliente
+                th Evento
+                th Total
+                th Estado
+                th Fecha Emisión
+                th Acciones
+            tbody
+              each factura in facturas
+                tr
+                  td= factura.numero || '-'
+                  td= factura.cliente?.nombre || '-'
+                  td= factura.evento?.nombre || '-'
+                  td= factura.total ? `$${factura.total.toLocaleString()}` : '-'
+                  td
+                    span.badge(class={
+                      'bg-secondary': factura.estado === 'borrador',
+                      'bg-warning': factura.estado === 'pendiente',
+                      'bg-info': factura.estado === 'enviada',
+                      'bg-success': factura.estado === 'pagada',
+                      'bg-danger': factura.estado === 'cancelada'
+                    })= factura.estado || 'borrador'
+                  td= factura.fechaEmision ? new Date(factura.fechaEmision).toLocaleDateString() : '-'
+                  td
+                    a.btn.btn-sm.btn-outline-primary(href=`/facturas/${factura.id}`)
+                      i.bi.bi-eye
+      else
+        .text-center.py-5
+          i.bi.bi-receipt.fs-1.text-muted
+          p.mt-3 No hay facturas registradas
+

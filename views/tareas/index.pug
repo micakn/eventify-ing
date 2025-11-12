@@ -1,0 +1,85 @@
+//- views/tareas/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-list-task.me-2
+        | Gestión de Tareas
+      p.text-muted Administra las tareas del equipo
+    a.btn.btn-primary(href="/tareas/nuevo")
+      i.bi.bi-plus-circle.me-2
+      | Nueva Tarea
+
+  .card
+    .card-body
+      if tareas && tareas.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Título
+                th Área
+                th Tipo
+                th Estado
+                th Prioridad
+                th Empleado
+                th Acciones
+            tbody
+              each tarea in tareas
+                tr
+                  td= tarea.titulo
+                  td= tarea.area || '-'
+                  td= tarea.tipo || '-'
+                  td
+                    span.badge(class={
+                      'bg-warning': tarea.estado === 'pendiente',
+                      'bg-info': tarea.estado === 'en proceso',
+                      'bg-success': tarea.estado === 'finalizada'
+                    })= tarea.estado || 'pendiente'
+                  td
+                    span.badge(class={
+                      'bg-success': tarea.prioridad === 'baja',
+                      'bg-warning': tarea.prioridad === 'media',
+                      'bg-danger': tarea.prioridad === 'alta'
+                    })= tarea.prioridad || 'media'
+                  td= tarea.empleadoAsignado?.nombre || '-'
+                  td
+                    .btn-group
+                      a.btn.btn-sm.btn-outline-primary(href=`/tareas/${tarea.id}`)
+                        i.bi.bi-eye
+                      a.btn.btn-sm.btn-outline-secondary(href=`/tareas/editar/${tarea.id}`)
+                        i.bi.bi-pencil
+                      button.btn.btn-sm.btn-outline-danger(
+                        type="button",
+                        onclick=`confirmDelete('${tarea.id}')`
+                      )
+                        i.bi.bi-trash
+      else
+        .text-center.py-5
+          i.bi.bi-list-task.fs-1.text-muted
+          p.mt-3 No hay tareas registradas
+          a.btn.btn-primary(href="/tareas/nuevo") Agregar primera tarea
+
+block scripts
+  script.
+    function confirmDelete(id) {
+      if (confirm('¿Estás seguro de eliminar esta tarea?')) {
+        fetch(`/tareas/${id}?_method=DELETE`, { method: 'POST' })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data?.mensaje) {
+              setTimeout(() => location.reload(), 1200);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+

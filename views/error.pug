@@ -1,0 +1,8 @@
+extends layout/layout
+
+block content
+  .container.mt-5.text-center
+    h1.text-danger #{title || 'Error inesperado'}
+    p.lead.mt-3 #{message || 'Ocurrió un error en el servidor.'}
+
+    a.btn.btn-primary.mt-4(href='/') Volver al inicio

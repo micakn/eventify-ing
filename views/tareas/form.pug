@@ -1,0 +1,70 @@
+//- views/tareas/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-8
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Tarea'
+          .card-body
+            form(method="POST", action=formAction)
+              .mb-3
+                label.form-label(for="titulo") Título *
+                input.form-control#titulo(type="text", name="titulo", value=tarea ? tarea.titulo : '', required)
+              
+              .mb-3
+                label.form-label(for="descripcion") Descripción
+                textarea.form-control#descripcion(name="descripcion", rows="3")= tarea ? tarea.descripcion : ''
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="area") Área *
+                    select.form-select#area(name="area", required)
+                      option(value="Producción y Logística", selected=(tarea && tarea.area === 'Producción y Logística')) Producción y Logística
+                      option(value="Planificación y Finanzas", selected=(tarea && tarea.area === 'Planificación y Finanzas')) Planificación y Finanzas
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="tipo") Tipo *
+                    input.form-control#tipo(type="text", name="tipo", value=tarea ? tarea.tipo : '', required)
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="estado") Estado
+                    select.form-select#estado(name="estado")
+                      option(value="pendiente", selected=(tarea && tarea.estado === 'pendiente')) Pendiente
+                      option(value="en proceso", selected=(tarea && tarea.estado === 'en proceso')) En Proceso
+                      option(value="finalizada", selected=(tarea && tarea.estado === 'finalizada')) Finalizada
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="prioridad") Prioridad
+                    select.form-select#prioridad(name="prioridad")
+                      option(value="baja", selected=(tarea && tarea.prioridad === 'baja')) Baja
+                      option(value="media", selected=(tarea && tarea.prioridad === 'media')) Media
+                      option(value="alta", selected=(tarea && tarea.prioridad === 'alta')) Alta
+              
+              .mb-3
+                label.form-label(for="empleadoAsignado") Empleado Asignado
+                select.form-select#empleadoAsignado(name="empleadoAsignado")
+                  option(value="") Sin asignar
+                  each empleado in empleados || []
+                    option(value=empleado.id, selected=(tarea && tarea.empleadoAsignado && (tarea.empleadoAsignado.id || tarea.empleadoAsignado) === empleado.id))= empleado.nombre
+              
+              .mb-3
+                label.form-label(for="eventoAsignado") Evento Asignado
+                select.form-select#eventoAsignado(name="eventoAsignado")
+                  option(value="") Sin evento
+                  each evento in eventos || []
+                    option(value=evento.id, selected=(tarea && tarea.eventoAsignado && (tarea.eventoAsignado.id || tarea.eventoAsignado) === evento.id))= evento.nombre
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = tarea ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/tareas")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar
+

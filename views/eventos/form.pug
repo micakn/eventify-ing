@@ -1,0 +1,68 @@
+//- views/eventos/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-10
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Evento'
+          .card-body
+            form(method="POST", action=formAction)
+              .mb-3
+                label.form-label(for="nombre") Nombre *
+                input.form-control#nombre(type="text", name="nombre", value=evento ? evento.nombre : '', required)
+              
+              .mb-3
+                label.form-label(for="descripcion") Descripción
+                textarea.form-control#descripcion(name="descripcion", rows="3")= evento ? evento.descripcion : ''
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="fechaInicio") Fecha Inicio *
+                    input.form-control#fechaInicio(type="datetime-local", name="fechaInicio", value=evento ? new Date(evento.fechaInicio).toISOString().slice(0, 16) : '', required)
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="fechaFin") Fecha Fin *
+                    input.form-control#fechaFin(type="datetime-local", name="fechaFin", value=evento ? new Date(evento.fechaFin).toISOString().slice(0, 16) : '', required)
+              
+              .mb-3
+                label.form-label(for="lugar") Lugar
+                input.form-control#lugar(type="text", name="lugar", value=evento ? evento.lugar : '')
+              
+              .mb-3
+                label.form-label(for="presupuesto") Presupuesto
+                input.form-control#presupuesto(type="number", name="presupuesto", step="0.01", value=evento ? evento.presupuesto : '0')
+              
+              .mb-3
+                label.form-label(for="cliente") Cliente
+                select.form-select#cliente(name="cliente")
+                  option(value="") Sin cliente
+                  each cliente in clientes || []
+                    option(value=cliente.id, selected=(evento && evento.cliente && (evento.cliente.id || evento.cliente) === cliente.id))= cliente.nombre
+              
+              .mb-3
+                label.form-label(for="estado") Estado
+                select.form-select#estado(name="estado")
+                  option(value="planificacion", selected=(evento && evento.estado === 'planificacion')) Planificación
+                  option(value="en_curso", selected=(evento && evento.estado === 'en_curso')) En Curso
+                  option(value="ejecutado", selected=(evento && evento.estado === 'ejecutado')) Ejecutado
+                  option(value="cerrado", selected=(evento && evento.estado === 'cerrado')) Cerrado
+                  option(value="cancelado", selected=(evento && evento.estado === 'cancelado')) Cancelado
+              
+              .mb-3
+                label.form-label(for="responsables") Responsables
+                select.form-select#responsables(name="responsables", multiple)
+                  each empleado in empleados || []
+                    option(value=empleado.id, selected=(evento && evento.responsables && evento.responsables.some(r => (r.id || r) === empleado.id)))= empleado.nombre
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = evento ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/eventos")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar
+

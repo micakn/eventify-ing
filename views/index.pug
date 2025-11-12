@@ -1,0 +1,25 @@
+//- views/index.pug
+extends layout/layout
+
+block content
+  .hero-section.bg-primary.text-white.py-5
+    .container
+      .row.align-items-center
+        .col-lg-6
+          h1.display-4.fw-bold Eventify - Sistema de Gestión
+          p.lead Plataforma integral para la gestión de eventos
+          a.btn.btn-light.btn-lg.mt-3(href="/clientes") 
+            i.bi.bi-arrow-right-circle.me-2
+            | Comenzar ahora
+        .col-lg-6
+          img.img-fluid.rounded(src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", alt="Sistema de gestión de eventos")
+
+  .container.my-5
+    .row.text-center
+      each module in [{name: 'Clientes', icon: 'people-fill', route: '/clientes', color: 'primary'}, {name: 'Eventos', icon: 'calendar-event', route: '/eventos', color: 'success'}, {name: 'Empleados', icon: 'person-badge', route: '/empleados', color: 'warning'}, {name: 'Tareas', icon: 'list-task', route: '/tareas', color: 'info'}]
+        .col-md-3.mb-4
+          .card.h-100.text-center
+            .card-body
+              i.bi(class=`bi-${module.icon} fs-1 text-${module.color} mb-3`)
+              h4.card-title= module.name
+              a.btn(class=`btn-outline-${module.color}`, href=module.route) Administrar

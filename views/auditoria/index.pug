@@ -1,0 +1,68 @@
+//- views/auditoria/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-shield-check.me-2
+        | Sistema de Auditoría
+      p.text-muted Registro de todas las acciones del sistema
+
+  .card.mb-4
+    .card-body
+      form.row.g-3(method="GET", action="/auditoria")
+        .col-md-3
+          label.form-label Entidad
+          input.form-control(type="text", name="entidad", placeholder="Ej: FacturaCliente", value=(filtros && filtros.entidad) || '')
+        .col-md-3
+          label.form-label Acción
+          select.form-select(name="accion")
+            option(value="") Todas
+            option(value="create", selected=(filtros && filtros.accion === 'create')) Crear
+            option(value="update", selected=(filtros && filtros.accion === 'update')) Actualizar
+            option(value="delete", selected=(filtros && filtros.accion === 'delete')) Eliminar
+        .col-md-3
+          label.form-label Fecha Desde
+          input.form-control(type="date", name="fechaDesde", value=(filtros && filtros.fechaDesde) || '')
+        .col-md-3
+          label.form-label &nbsp;
+          button.btn.btn-primary.w-100(type="submit") Filtrar
+
+  .card
+    .card-body
+      if registros && registros.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Fecha
+                th Acción
+                th Entidad
+                th Usuario
+                th Resultado
+                th IP
+                th Acciones
+            tbody
+              each registro in registros
+                tr
+                  td= registro.fecha ? new Date(registro.fecha).toLocaleString() : '-'
+                  td
+                    span.badge.bg-info= registro.accion || '-'
+                  td= registro.entidad || '-'
+                  td= registro.usuario?.email || registro.empleado?.nombre || '-'
+                  td
+                    span.badge(class={
+                      'bg-success': registro.resultado === 'success',
+                      'bg-danger': registro.resultado === 'error',
+                      'bg-warning': registro.resultado === 'warning'
+                    })= registro.resultado || '-'
+                  td= registro.ip || '-'
+                  td
+                    a.btn.btn-sm.btn-outline-primary(href=`/auditoria/${registro.id}`)
+                      i.bi.bi-eye
+      else
+        .text-center.py-5
+          i.bi.bi-shield-check.fs-1.text-muted
+          p.mt-3 No hay registros de auditoría
+

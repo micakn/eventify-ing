@@ -1,0 +1,55 @@
+//- views/clientes/show.pug
+extends ../layout/layout
+
+block content
+  .row.justify-content-center
+    .col-lg-8
+      .card
+        .card-header.d-flex.justify-content-between.align-items-center
+          h3.mb-0
+            i.bi.bi-person.me-2
+            | Detalle del Cliente
+          .btn-group
+            a.btn.btn-outline-secondary(href="/clientes/editar/" + cliente.id)
+              i.bi.bi-pencil.me-2
+              | Editar
+            a.btn.btn-outline-primary(href="/clientes")
+              i.bi.bi-arrow-left.me-2
+              | Volver
+        
+        .card-body
+          .row
+            .col-md-3.text-center
+              .avatar-placeholder.bg-primary.text-white.rounded-circle.mx-auto.mb-3(style="width: 80px; height: 80px; line-height: 80px; font-size: 2rem;")
+                i.bi.bi-person
+              h5= cliente.nombre
+              span.badge(class=cliente.tipo === 'empresa' ? 'bg-primary' : 'bg-success')= cliente.tipo
+            
+            .col-md-9
+              .row
+                .col-md-6
+                  h6 Información de contacto
+                  p
+                    strong Email: 
+                    br
+                    = cliente.email
+                  if cliente.telefono
+                    p
+                      strong Teléfono: 
+                      br
+                      = cliente.telefono
+                
+                .col-md-6
+                  h6 Información adicional
+                  if cliente.empresa
+                    p
+                      strong Empresa: 
+                      br
+                      = cliente.empresa
+                  p
+                    strong ID: 
+                    br
+                    = cliente.id
+                  p
+                    strong Estado: 
+                    span.badge.bg-success Activo

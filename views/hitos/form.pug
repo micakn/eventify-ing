@@ -1,0 +1,72 @@
+//- views/hitos/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-8
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Hito'
+          .card-body
+            form(method="POST", action=formAction)
+              .mb-3
+                label.form-label(for="nombre") Nombre *
+                input.form-control#nombre(type="text", name="nombre", value=hito ? hito.nombre : '', required)
+              
+              .mb-3
+                label.form-label(for="descripcion") Descripción
+                textarea.form-control#descripcion(name="descripcion", rows="3")= hito ? hito.descripcion : ''
+              
+              .mb-3
+                label.form-label(for="evento") Evento *
+                select.form-select#evento(name="evento", required)
+                  option(value="") Seleccionar evento
+                  each evento in eventos || []
+                    option(value=evento.id, selected=(hito && hito.evento && (hito.evento.id || hito.evento) === evento.id))= evento.nombre
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="fechaInicio") Fecha Inicio
+                    input.form-control#fechaInicio(type="datetime-local", name="fechaInicio", value=hito ? new Date(hito.fechaInicio).toISOString().slice(0, 16) : '')
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="fechaFin") Fecha Fin
+                    input.form-control#fechaFin(type="datetime-local", name="fechaFin", value=hito ? new Date(hito.fechaFin).toISOString().slice(0, 16) : '')
+              
+              .mb-3
+                label.form-label(for="responsable") Responsable
+                select.form-select#responsable(name="responsable")
+                  option(value="") Sin responsable
+                  each empleado in empleados || []
+                    option(value=empleado.id, selected=(hito && hito.responsable && (hito.responsable.id || hito.responsable) === empleado.id))= empleado.nombre
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="tipo") Tipo
+                    select.form-select#tipo(name="tipo")
+                      option(value="reunion", selected=(hito && hito.tipo === 'reunion')) Reunión
+                      option(value="tarea", selected=(hito && hito.tipo === 'tarea')) Tarea
+                      option(value="hito", selected=(hito && hito.tipo === 'hito')) Hito
+                      option(value="revision", selected=(hito && hito.tipo === 'revision')) Revisión
+                      option(value="entrega", selected=(hito && hito.tipo === 'entrega')) Entrega
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="estado") Estado
+                    select.form-select#estado(name="estado")
+                      option(value="pendiente", selected=(hito && hito.estado === 'pendiente')) Pendiente
+                      option(value="en_progreso", selected=(hito && hito.estado === 'en_progreso')) En Progreso
+                      option(value="completado", selected=(hito && hito.estado === 'completado')) Completado
+                      option(value="atrasado", selected=(hito && hito.estado === 'atrasado')) Atrasado
+                      option(value="cancelado", selected=(hito && hito.estado === 'cancelado')) Cancelado
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = hito ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/hitos")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar
+

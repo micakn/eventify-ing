@@ -1,0 +1,103 @@
+//- views/cotizaciones/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-file-earmark-text.me-2
+        | Gestión de Cotizaciones
+      p.text-muted Administra las cotizaciones a clientes
+    a.btn.btn-primary(href="/cotizaciones/nuevo")
+      i.bi.bi-plus-circle.me-2
+      | Nueva Cotización
+
+  .card.mb-4
+    .card-body
+      form.row.g-3(method="GET", action="/cotizaciones")
+        .col-md-4
+          label.form-label Estado
+          select.form-select(name="estado")
+            option(value="") Todos
+            option(value="borrador", selected=(filtros && filtros.estado === 'borrador')) Borrador
+            option(value="pendiente", selected=(filtros && filtros.estado === 'pendiente')) Pendiente
+            option(value="aprobada", selected=(filtros && filtros.estado === 'aprobada')) Aprobada
+            option(value="rechazada", selected=(filtros && filtros.estado === 'rechazada')) Rechazada
+        .col-md-4
+          label.form-label Cliente
+          select.form-select(name="cliente")
+            option(value="") Todos
+            each cliente in clientes || []
+              option(value=cliente.id, selected=(filtros && filtros.cliente === cliente.id))= cliente.nombre
+        .col-md-4
+          label.form-label &nbsp;
+          button.btn.btn-primary.w-100(type="submit") Filtrar
+
+  .card
+    .card-body
+      if cotizaciones && cotizaciones.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Número
+                th Cliente
+                th Evento
+                th Total
+                th Estado
+                th Versión
+                th Acciones
+            tbody
+              each cotizacion in cotizaciones
+                tr
+                  td= cotizacion.numero || '-'
+                  td= cotizacion.cliente?.nombre || '-'
+                  td= cotizacion.evento?.nombre || '-'
+                  td= cotizacion.total ? `$${cotizacion.total.toLocaleString()}` : '-'
+                  td
+                    span.badge(class={
+                      'bg-secondary': cotizacion.estado === 'borrador',
+                      'bg-warning': cotizacion.estado === 'pendiente',
+                      'bg-success': cotizacion.estado === 'aprobada',
+                      'bg-danger': cotizacion.estado === 'rechazada',
+                      'bg-info': cotizacion.estado === 'vencida'
+                    })= cotizacion.estado || 'borrador'
+                  td= cotizacion.version || 1
+                  td
+                    .btn-group
+                      a.btn.btn-sm.btn-outline-primary(href=`/cotizaciones/${cotizacion.id}`)
+                        i.bi.bi-eye
+                      a.btn.btn-sm.btn-outline-secondary(href=`/cotizaciones/editar/${cotizacion.id}`)
+                        i.bi.bi-pencil
+                      button.btn.btn-sm.btn-outline-danger(
+                        type="button",
+                        onclick=`confirmDelete('${cotizacion.id}')`
+                      )
+                        i.bi.bi-trash
+      else
+        .text-center.py-5
+          i.bi.bi-file-earmark-text.fs-1.text-muted
+          p.mt-3 No hay cotizaciones registradas
+          a.btn.btn-primary(href="/cotizaciones/nuevo") Agregar primera cotización
+
+block scripts
+  script.
+    function confirmDelete(id) {
+      if (confirm('¿Estás seguro de eliminar esta cotización?')) {
+        fetch(`/cotizaciones/${id}?_method=DELETE`, { method: 'POST' })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data?.mensaje) {
+              setTimeout(() => location.reload(), 1200);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+

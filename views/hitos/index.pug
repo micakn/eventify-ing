@@ -1,0 +1,80 @@
+//- views/hitos/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-calendar-check.me-2
+        | Gestión de Hitos
+      p.text-muted Administra los hitos del cronograma
+    a.btn.btn-primary(href="/hitos/nuevo")
+      i.bi.bi-plus-circle.me-2
+      | Nuevo Hito
+
+  .card
+    .card-body
+      if hitos && hitos.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Nombre
+                th Evento
+                th Fecha Inicio
+                th Fecha Fin
+                th Estado
+                th Tipo
+                th Acciones
+            tbody
+              each hito in hitos
+                tr
+                  td= hito.nombre
+                  td= hito.evento?.nombre || '-'
+                  td= hito.fechaInicio ? new Date(hito.fechaInicio).toLocaleDateString() : '-'
+                  td= hito.fechaFin ? new Date(hito.fechaFin).toLocaleDateString() : '-'
+                  td
+                    span.badge(class={
+                      'bg-warning': hito.estado === 'pendiente',
+                      'bg-info': hito.estado === 'en_progreso',
+                      'bg-success': hito.estado === 'completado',
+                      'bg-danger': hito.estado === 'atrasado',
+                      'bg-secondary': hito.estado === 'cancelado'
+                    })= hito.estado || 'pendiente'
+                  td= hito.tipo || '-'
+                  td
+                    .btn-group
+                      a.btn.btn-sm.btn-outline-primary(href=`/hitos/${hito.id}`)
+                        i.bi.bi-eye
+                      button.btn.btn-sm.btn-outline-danger(
+                        type="button",
+                        onclick=`confirmDelete('${hito.id}')`
+                      )
+                        i.bi.bi-trash
+      else
+        .text-center.py-5
+          i.bi.bi-calendar-check.fs-1.text-muted
+          p.mt-3 No hay hitos registrados
+          a.btn.btn-primary(href="/hitos/nuevo") Agregar primer hito
+
+block scripts
+  script.
+    function confirmDelete(id) {
+      if (confirm('¿Estás seguro de eliminar este hito?')) {
+        fetch(`/hitos/${id}?_method=DELETE`, { method: 'POST' })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data?.mensaje) {
+              setTimeout(() => location.reload(), 1200);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+

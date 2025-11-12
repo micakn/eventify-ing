@@ -1,0 +1,45 @@
+//- views/clientes/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-8
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Cliente'
+          .card-body
+            form(method="POST", action=formAction)
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="nombre") Nombre *
+                    input.form-control#nombre(type="text", name="nombre", value=cliente ? cliente.nombre : '', required)
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="empresa") Empresa
+                    input.form-control#empresa(type="text", name="empresa", value=cliente ? cliente.empresa : '')
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="email") Email *
+                    input.form-control#email(type="email", name="email", value=cliente ? cliente.email : '', required)
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="telefono") Teléfono
+                    input.form-control#telefono(type="tel", name="telefono", value=cliente ? cliente.telefono : '')
+              
+              .mb-3
+                label.form-label(for="tipo") Tipo de cliente
+                select.form-select#tipo(name="tipo")
+                  option(value="individual", selected=(cliente && cliente.tipo === 'individual')) Individual
+                  option(value="empresa", selected=(cliente && cliente.tipo === 'empresa')) Empresa
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = cliente ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/clientes")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar

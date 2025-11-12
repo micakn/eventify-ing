@@ -1,0 +1,35 @@
+extends ../layout/layout
+
+block content
+  .container.mt-5
+    .row.justify-content-center
+      .col-md-5
+        .card.shadow
+          .card-body
+            h2.card-title.text-center.mb-4 Eventify - Login
+            if error
+              .alert.alert-danger(role='alert')= error
+            form(action='/auth/login', method='POST')
+              .mb-3
+                label.form-label(for='email') Email
+                input#email.form-control(
+                  type='email',
+                  name='email',
+                  required,
+                  autocomplete='email'
+                )
+              .mb-3
+                label.form-label(for='password') Contraseña
+                input#password.form-control(
+                  type='password',
+                  name='password',
+                  required,
+                  autocomplete='current-password'
+                )
+              .d-grid
+                button.btn.btn-primary(type='submit') Iniciar Sesión
+            .mt-3.text-center
+              small.text-muted
+                | ¿Olvidaste tu contraseña? 
+                a(href='#') Recuperar
+

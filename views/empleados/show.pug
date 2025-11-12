@@ -1,0 +1,52 @@
+//- views/empleados/show.pug
+extends ../layout/layout
+
+block content
+  .row.justify-content-center
+    .col-lg-8
+      .card
+        .card-header.d-flex.justify-content-between.align-items-center
+          h3.mb-0
+            i.bi.bi-person-badge.me-2
+            | Detalle del Empleado
+          .btn-group
+            a.btn.btn-outline-secondary(href="/empleados/editar/" + empleado.id)
+              i.bi.bi-pencil.me-2
+              | Editar
+            a.btn.btn-outline-primary(href="/empleados")
+              i.bi.bi-arrow-left.me-2
+              | Volver
+        
+        .card-body
+          .row
+            .col-md-3.text-center
+              .avatar-placeholder.bg-info.text-white.rounded-circle.mx-auto.mb-3
+                i.bi.bi-person-badge
+              h5= empleado.nombre
+              span.badge.bg-info= empleado.rol
+            
+            .col-md-9
+              .row
+                .col-md-6
+                  h6 Información de contacto
+                  p
+                    strong Email: 
+                    br
+                    = empleado.email || '-'
+                  if empleado.telefono
+                    p
+                      strong Teléfono: 
+                      br
+                      = empleado.telefono
+                
+                .col-md-6
+                  h6 Información laboral
+                  p
+                    strong Área: 
+                    br
+                    = empleado.area || '-'
+                  p
+                    strong ID: 
+                    br
+                    = empleado.id
+

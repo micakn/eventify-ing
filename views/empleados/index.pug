@@ -1,0 +1,74 @@
+//- views/empleados/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-person-badge.me-2
+        | Gestión de Empleados
+      p.text-muted Administra tu equipo de trabajo
+    a.btn.btn-primary(href="/empleados/nuevo")
+      i.bi.bi-plus-circle.me-2
+      | Nuevo Empleado
+
+  .card
+    .card-body
+      if empleados && empleados.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Nombre
+                th Email
+                th Rol
+                th Área
+                th Teléfono
+                th Acciones
+            tbody
+              each empleado in empleados
+                tr
+                  td= empleado.nombre
+                  td= empleado.email || '-'
+                  td
+                    span.badge.bg-info= empleado.rol
+                  td= empleado.area || '-'
+                  td= empleado.telefono || '-'
+                  td
+                    .btn-group
+                      a.btn.btn-sm.btn-outline-primary(href=`/empleados/${empleado.id}`)
+                        i.bi.bi-eye
+                      a.btn.btn-sm.btn-outline-secondary(href=`/empleados/editar/${empleado.id}`)
+                        i.bi.bi-pencil
+                      button.btn.btn-sm.btn-outline-danger(
+                        type="button",
+                        onclick=`confirmDelete('${empleado.id}')`
+                      )
+                        i.bi.bi-trash
+      else
+        .text-center.py-5
+          i.bi.bi-person-badge.fs-1.text-muted
+          p.mt-3 No hay empleados registrados
+          a.btn.btn-primary(href="/empleados/nuevo") Agregar primer empleado
+
+block scripts
+  script.
+    function confirmDelete(id) {
+      if (confirm('¿Estás seguro de eliminar este empleado?')) {
+        fetch(`/empleados/${id}?_method=DELETE`, { method: 'POST' })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data?.mensaje) {
+              setTimeout(() => location.reload(), 1200);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+

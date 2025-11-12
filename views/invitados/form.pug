@@ -1,0 +1,56 @@
+//- views/invitados/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-8
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Invitado'
+          .card-body
+            form(method="POST", action=formAction)
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="nombre") Nombre *
+                    input.form-control#nombre(type="text", name="nombre", value=invitado ? invitado.nombre : '', required)
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="apellido") Apellido *
+                    input.form-control#apellido(type="text", name="apellido", value=invitado ? invitado.apellido : '', required)
+              
+              .mb-3
+                label.form-label(for="email") Email
+                input.form-control#email(type="email", name="email", value=invitado ? invitado.email : '')
+              
+              .mb-3
+                label.form-label(for="telefono") Teléfono
+                input.form-control#telefono(type="tel", name="telefono", value=invitado ? invitado.telefono : '')
+              
+              .mb-3
+                label.form-label(for="evento") Evento *
+                select.form-select#evento(name="evento", required)
+                  option(value="") Seleccionar evento
+                  each evento in eventos || []
+                    option(value=evento.id, selected=(invitado && invitado.evento && (invitado.evento.id || invitado.evento) === evento.id))= evento.nombre
+              
+              .mb-3
+                label.form-label(for="tipoInvitado") Tipo de Invitado
+                select.form-select#tipoInvitado(name="tipoInvitado")
+                  option(value="VIP", selected=(invitado && invitado.tipoInvitado === 'VIP')) VIP
+                  option(value="Standard", selected=(invitado && invitado.tipoInvitado === 'Standard')) Standard
+                  option(value="Media", selected=(invitado && invitado.tipoInvitado === 'Media')) Media
+              
+              .mb-3
+                label.form-label(for="notas") Notas
+                textarea.form-control#notas(name="notas", rows="3")= invitado ? invitado.notas : ''
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = invitado ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/invitados")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar
+

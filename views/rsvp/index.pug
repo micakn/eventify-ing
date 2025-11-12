@@ -1,0 +1,86 @@
+extends ../layout/layout
+
+block content
+  .container.mt-5
+    .row.justify-content-center
+      .col-md-8
+        .card.shadow
+          .card-body
+            if invitacion
+              if invitacion.evento
+                h2.card-title.text-center.mb-4= invitacion.evento.nombre
+                if invitacion.evento.descripcion
+                  p.text-center.text-muted= invitacion.evento.descripcion
+                
+                .mt-4
+                  p
+                    strong Fecha:
+                    |  #{new Date(invitacion.evento.fechaInicio).toLocaleDateString('es-AR')}
+                  if invitacion.evento.lugar
+                    p
+                      strong Lugar:
+                      |  #{invitacion.evento.lugar}
+                
+                if invitacion.invitado
+                  .alert.alert-info.mt-4
+                    h5 Hola #{invitacion.invitado.nombre} #{invitacion.invitado.apellido || ''}
+                    p Confirma tu asistencia al evento
+                
+                if invitacion.estado === 'respondida'
+                  .alert.alert-success.mt-4
+                    h5 ✅ Ya respondiste esta invitación
+                    p Tu respuesta: 
+                      strong= invitacion.respuesta === 'confirmado' ? 'Confirmado' : invitacion.respuesta === 'rechazado' ? 'Rechazado' : 'Tal vez'
+                else if invitacion.estado === 'expirada'
+                  .alert.alert-warning.mt-4
+                    h5 ⚠️ Esta invitación ha expirado
+                else
+                  form#rsvpForm.mt-4(action=`/api/invitados/rsvp/${invitacion.enlaceUnico}`, method='POST')
+                    .mb-3
+                      label.form-label ¿Confirmas tu asistencia?
+                      .form-check
+                        input#confirmado.form-check-input(type='radio', name='respuesta', value='confirmado', required)
+                        label.form-check-label(for='confirmado') Sí, asistiré
+                      .form-check
+                        input#rechazado.form-check-input(type='radio', name='respuesta', value='rechazado', required)
+                        label.form-check-label(for='rechazado') No, no asistiré
+                      .form-check
+                        input#talvez.form-check-input(type='radio', name='respuesta', value='talvez', required)
+                        label.form-check-label(for='talvez') Tal vez
+                    
+                    .d-grid
+                      button.btn.btn-primary(type='submit') Confirmar
+            else
+              .alert.alert-danger
+                h5 Invitación no válida
+                p El enlace de invitación no es válido o ha expirado
+
+block scripts
+  script.
+    document.getElementById('rsvpForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const respuesta = formData.get('respuesta');
+      
+      try {
+        const response = await fetch(this.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ respuesta })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert('¡Respuesta registrada exitosamente!');
+          location.reload();
+        } else {
+          alert('Error: ' + (data.detalle || data.mensaje || 'Error al procesar la respuesta'));
+        }
+      } catch (error) {
+        alert('Error al enviar la respuesta');
+      }
+    });
+

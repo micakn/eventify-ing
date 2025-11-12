@@ -1,0 +1,103 @@
+//- views/eventos/index.pug
+extends ../layout/layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1 
+        i.bi.bi-calendar-event.me-2
+        | Gestión de Eventos
+      p.text-muted Administra tus eventos
+    a.btn.btn-primary(href="/eventos/nuevo")
+      i.bi.bi-plus-circle.me-2
+      | Nuevo Evento
+
+  .card.mb-4
+    .card-body
+      form.row.g-3(method="GET", action="/eventos")
+        .col-md-4
+          label.form-label Estado
+          select.form-select(name="estado")
+            option(value="") Todos
+            option(value="planificacion", selected=(filtros && filtros.estado === 'planificacion')) Planificación
+            option(value="en_curso", selected=(filtros && filtros.estado === 'en_curso')) En Curso
+            option(value="ejecutado", selected=(filtros && filtros.estado === 'ejecutado')) Ejecutado
+            option(value="cerrado", selected=(filtros && filtros.estado === 'cerrado')) Cerrado
+        .col-md-4
+          label.form-label Cliente
+          select.form-select(name="cliente")
+            option(value="") Todos
+            each cliente in clientes || []
+              option(value=cliente.id, selected=(filtros && filtros.cliente === cliente.id))= cliente.nombre
+        .col-md-4
+          label.form-label &nbsp;
+          button.btn.btn-primary.w-100(type="submit") Filtrar
+
+  .card
+    .card-body
+      if eventos && eventos.length > 0
+        .table-responsive
+          table.table.table-hover
+            thead.table-dark
+              tr
+                th Nombre
+                th Fecha Inicio
+                th Fecha Fin
+                th Lugar
+                th Estado
+                th Presupuesto
+                th Acciones
+            tbody
+              each evento in eventos
+                tr
+                  td= evento.nombre
+                  td= evento.fechaInicio ? new Date(evento.fechaInicio).toLocaleDateString() : '-'
+                  td= evento.fechaFin ? new Date(evento.fechaFin).toLocaleDateString() : '-'
+                  td= evento.lugar || '-'
+                  td
+                    span.badge(class={
+                      'bg-warning': evento.estado === 'planificacion',
+                      'bg-info': evento.estado === 'en_curso',
+                      'bg-success': evento.estado === 'ejecutado',
+                      'bg-secondary': evento.estado === 'cerrado',
+                      'bg-danger': evento.estado === 'cancelado'
+                    })= evento.estado || 'planificacion'
+                  td= evento.presupuesto ? `$${evento.presupuesto.toLocaleString()}` : '-'
+                  td
+                    .btn-group
+                      a.btn.btn-sm.btn-outline-primary(href=`/eventos/${evento.id}`)
+                        i.bi.bi-eye
+                      a.btn.btn-sm.btn-outline-secondary(href=`/eventos/editar/${evento.id}`)
+                        i.bi.bi-pencil
+                      button.btn.btn-sm.btn-outline-danger(
+                        type="button",
+                        onclick=`confirmDelete('${evento.id}')`
+                      )
+                        i.bi.bi-trash
+      else
+        .text-center.py-5
+          i.bi.bi-calendar-event.fs-1.text-muted
+          p.mt-3 No hay eventos registrados
+          a.btn.btn-primary(href="/eventos/nuevo") Agregar primer evento
+
+block scripts
+  script.
+    function confirmDelete(id) {
+      if (confirm('¿Estás seguro de eliminar este evento?')) {
+        fetch(`/eventos/${id}?_method=DELETE`, { method: 'POST' })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data?.mensaje) {
+              setTimeout(() => location.reload(), 1200);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+
