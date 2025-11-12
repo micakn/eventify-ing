@@ -1,8 +1,18 @@
 # 📋 Documento de Ingeniería de Software - ERP para Eventify
 
+## 🚀 Sistema en Producción
+
+**✅ El sistema está desplegado y disponible en:**
+
+🔗 **URL de Producción**: [https://eventify-e7el24f8e-micaela-knass-projects.vercel.app](https://eventify-e7el24f8e-micaela-knass-projects.vercel.app)
+
+---
+
 ## 🎯 Resumen Ejecutivo
 
 **ERP para Eventify** es un sistema de gestión integral desarrollado para transformar la operación de Eventify, una empresa dedicada a la organización integral de eventos sociales, empresariales y culturales. Este documento presenta la propuesta completa de desarrollo, desde el análisis de la problemática actual hasta la implementación de un ERP a medida que integre todas las áreas de la empresa en una única plataforma.
+
+El sistema está **completamente funcional y desplegado en producción** en Vercel, permitiendo que Eventify comience a utilizar el ERP inmediatamente.
 
 ---
 
@@ -536,8 +546,8 @@ El sistema utiliza una arquitectura **MVC (Model-View-Controller)** con las sigu
 
 #### Frontend
 
-- **Pug**: Motor de plantillas.
-- **Bootstrap 5**: Framework CSS para diseño responsivo.
+- **Interfaz Web Responsive**: Diseño adaptativo que funciona en cualquier dispositivo.
+- **Bootstrap 5**: Framework CSS para diseño responsivo y moderno.
 - **JavaScript**: Interactividad del lado del cliente.
 
 #### Seguridad
