@@ -5,7 +5,14 @@
  * Middleware para manejar errores de manera centralizada
  */
 export const errorHandler = (err, req, res, next) => {
-  console.error('Error capturado:', err);
+  // Siempre loguear el error completo para debugging
+  console.error('❌ Error capturado en errorHandler:');
+  console.error('Mensaje:', err.message);
+  console.error('Stack:', err.stack);
+  console.error('Nombre:', err.name);
+  if (err.code) console.error('Código:', err.code);
+  console.error('URL:', req.url);
+  console.error('Método:', req.method);
 
   // Error de validación de Mongoose
   if (err.name === 'ValidationError') {
@@ -42,9 +49,15 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // Error genérico del servidor
+  // En Vercel, mostrar más información para debugging
+  const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
+  const showDetails = process.env.NODE_ENV === 'development' || isVercel;
+  
   res.status(500).json({
     mensaje: 'Error interno del servidor',
-    detalle: process.env.NODE_ENV === 'development' ? err.message : 'Ocurrió un error inesperado'
+    detalle: showDetails ? err.message : 'Ocurrió un error inesperado',
+    tipo: showDetails ? err.name : undefined,
+    ...(showDetails && err.stack ? { stack: err.stack } : {})
   });
 };
 
