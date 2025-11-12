@@ -53,7 +53,7 @@ app.use(express.urlencoded({ extended: true })); // Formularios
 app.use(methodOverride('_method')); // Permite usar DELETE/PUT desde formularios
 
 // -------------------- Configuración de Sesiones --------------------
-// Configurar sesiones con MongoStore solo si MONGODB_URI está disponible
+// Configurar sesiones con MongoStore solo si MONGODB_URI está disponible y es válido
 // En serverless, usar sesiones en memoria como fallback
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'tu-session-secret-cambiar-en-produccion',
@@ -66,17 +66,27 @@ const sessionConfig = {
   }
 };
 
-// Solo usar MongoStore si MONGODB_URI está disponible
-if (process.env.MONGODB_URI) {
+// Solo usar MongoStore si MONGODB_URI está disponible y es una cadena no vacía
+const mongoUri = process.env.MONGODB_URI;
+if (mongoUri && typeof mongoUri === 'string' && mongoUri.trim().length > 0) {
   try {
-    sessionConfig.store = MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      ttl: 14 * 24 * 60 * 60 // 14 días
-    });
+    // Validar que la URI tenga el formato correcto
+    if (mongoUri.startsWith('mongodb://') || mongoUri.startsWith('mongodb+srv://')) {
+      sessionConfig.store = MongoStore.create({
+        mongoUrl: mongoUri,
+        ttl: 14 * 24 * 60 * 60 // 14 días
+      });
+      console.log('✅ MongoStore configurado para sesiones');
+    } else {
+      console.warn('⚠️  MONGODB_URI no tiene un formato válido, usando sesiones en memoria');
+    }
   } catch (error) {
     console.warn('⚠️  No se pudo crear MongoStore, usando sesiones en memoria:', error.message);
+    console.warn('Stack:', error.stack);
     // Continuar sin store (sesiones en memoria)
   }
+} else {
+  console.warn('⚠️  MONGODB_URI no está configurada, usando sesiones en memoria');
 }
 
 app.use(session(sessionConfig));
