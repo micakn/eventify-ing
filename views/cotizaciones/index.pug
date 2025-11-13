@@ -51,8 +51,8 @@ block content
               each cotizacion in cotizaciones
                 tr
                   td= cotizacion.numero || '-'
-                  td= cotizacion.cliente?.nombre || '-'
-                  td= cotizacion.evento?.nombre || '-'
+                  td= (cotizacion.cliente && cotizacion.cliente.nombre) || '-'
+                  td= (cotizacion.evento && cotizacion.evento.nombre) || '-'
                   td= cotizacion.total ? `$${cotizacion.total.toLocaleString()}` : '-'
                   td
                     span.badge(class={

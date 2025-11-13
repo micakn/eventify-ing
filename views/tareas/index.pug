@@ -44,7 +44,7 @@ block content
                       'bg-warning': tarea.prioridad === 'media',
                       'bg-danger': tarea.prioridad === 'alta'
                     })= tarea.prioridad || 'media'
-                  td= tarea.empleadoAsignado?.nombre || '-'
+                  td= (tarea.empleadoAsignado && tarea.empleadoAsignado.nombre) || '-'
                   td
                     .btn-group
                       a.btn.btn-sm.btn-outline-primary(href=`/tareas/${tarea.id}`)

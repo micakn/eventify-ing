@@ -16,17 +16,17 @@ block content
               
               .mb-3
                 label.form-label(for="contactoNombre") Nombre de Contacto
-                input.form-control#contactoNombre(type="text", name="contacto.nombre", value=proveedor ? proveedor.contacto?.nombre : '')
+                input.form-control#contactoNombre(type="text", name="contacto.nombre", value=proveedor ? (proveedor.contacto && proveedor.contacto.nombre) : '')
               
               .row
                 .col-md-6
                   .mb-3
                     label.form-label(for="contactoEmail") Email de Contacto
-                    input.form-control#contactoEmail(type="email", name="contacto.email", value=proveedor ? proveedor.contacto?.email : '')
+                    input.form-control#contactoEmail(type="email", name="contacto.email", value=proveedor ? (proveedor.contacto && proveedor.contacto.email) : '')
                 .col-md-6
                   .mb-3
                     label.form-label(for="contactoTelefono") Teléfono de Contacto
-                    input.form-control#contactoTelefono(type="tel", name="contacto.telefono", value=proveedor ? proveedor.contacto?.telefono : '')
+                    input.form-control#contactoTelefono(type="tel", name="contacto.telefono", value=proveedor ? (proveedor.contacto && proveedor.contacto.telefono) : '')
               
               .mb-3
                 label.form-label(for="condicionImpositiva") Condición Impositiva

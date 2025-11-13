@@ -29,9 +29,9 @@ block content
               each proveedor in proveedores
                 tr
                   td= proveedor.nombre
-                  td= proveedor.contacto?.nombre || '-'
-                  td= proveedor.contacto?.email || '-'
-                  td= proveedor.contacto?.telefono || '-'
+                  td= (proveedor.contacto && proveedor.contacto.nombre) || '-'
+                  td= (proveedor.contacto && proveedor.contacto.email) || '-'
+                  td= (proveedor.contacto && proveedor.contacto.telefono) || '-'
                   td
                     span.badge(class=proveedor.activo ? 'bg-success' : 'bg-secondary')= proveedor.activo ? 'Activo' : 'Inactivo'
                   td

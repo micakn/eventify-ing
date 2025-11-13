@@ -48,8 +48,8 @@ block content
               each factura in facturas
                 tr
                   td= factura.numero || '-'
-                  td= factura.cliente?.nombre || '-'
-                  td= factura.evento?.nombre || '-'
+                  td= (factura.cliente && factura.cliente.nombre) || '-'
+                  td= (factura.evento && factura.evento.nombre) || '-'
                   td= factura.total ? `$${factura.total.toLocaleString()}` : '-'
                   td
                     span.badge(class={

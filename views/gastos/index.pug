@@ -30,7 +30,7 @@ block content
               each gasto in gastos
                 tr
                   td= gasto.numero || '-'
-                  td= gasto.evento?.nombre || '-'
+                  td= (gasto.evento && gasto.evento.nombre) || '-'
                   td= gasto.descripcion || '-'
                   td= gasto.total ? `$${gasto.total.toLocaleString()}` : '-'
                   td

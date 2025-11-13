@@ -10,12 +10,15 @@ const listAuditoriaWeb = async (req, res) => {
     if (req.query.fechaDesde) filtros.fechaDesde = req.query.fechaDesde;
     if (req.query.fechaHasta) filtros.fechaHasta = req.query.fechaHasta;
     
-    let registros = await AuditoriaModel.getAll(filtros);
-    registros = registros.map(r => ({ ...r, id: r.id || r._id?.toString() }));
+    const { registros = [], total = 0, limit = 100, skip = 0 } = await AuditoriaModel.getAll(filtros);
+    const registrosConId = registros.map(r => ({ ...r, id: r.id || r._id?.toString() }));
     
     res.render('auditoria/index', {
       title: 'Auditoría - Eventify',
-      registros,
+      registros: registrosConId,
+      total,
+      limit,
+      skip,
       currentPath: req.baseUrl || req.path,
       filtros
     });

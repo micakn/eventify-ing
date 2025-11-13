@@ -50,7 +50,7 @@ block content
                   td
                     span.badge.bg-info= registro.accion || '-'
                   td= registro.entidad || '-'
-                  td= registro.usuario?.email || registro.empleado?.nombre || '-'
+                  td= (registro.usuario && registro.usuario.email) || (registro.empleado && registro.empleado.nombre) || '-'
                   td
                     span.badge(class={
                       'bg-success': registro.resultado === 'success',

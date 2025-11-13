@@ -177,17 +177,140 @@ app.get('/health', (req, res) => {
 // Ruta principal
 app.get('/', async (req, res) => {
   try {
-    const tareas = await TareaModel.getAll();
-    const empleados = await EmpleadoModel.getAll();
-    const clientes = await ClienteModel.getAll();
-    const eventos = await EventoModel.getAll();
+    const [tareas, empleados, clientes, eventos] = await Promise.all([
+      TareaModel.getAll(),
+      EmpleadoModel.getAll(),
+      ClienteModel.getAll(),
+      EventoModel.getAll()
+    ]);
+
+    const ahora = new Date();
+
+    const eventosPorEstado = eventos.reduce((acum, evento) => {
+      const estado = evento.estado || 'planificacion';
+      acum[estado] = (acum[estado] || 0) + 1;
+      return acum;
+    }, {});
+
+    const estadoEventoColor = {
+      planificacion: 'bg-primary',
+      en_curso: 'bg-info',
+      ejecutado: 'bg-success',
+      cerrado: 'bg-secondary',
+      cancelado: 'bg-danger'
+    };
+
+    const eventosProximos = eventos
+      .filter(evento => evento.fechaInicio && new Date(evento.fechaInicio) >= ahora)
+      .sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio))
+      .slice(0, 4)
+      .map(evento => {
+        const fecha = evento.fechaInicio ? new Date(evento.fechaInicio) : null;
+        return {
+          id: evento.id,
+          nombre: evento.nombre,
+          clienteNombre: evento.cliente && evento.cliente.nombre ? evento.cliente.nombre : '-',
+          estado: evento.estado || 'planificacion',
+          badgeClass: estadoEventoColor[evento.estado || 'planificacion'] || 'bg-secondary',
+          fechaInicio: fecha,
+          fechaInicioLabel: fecha
+            ? fecha.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
+            : 'Sin fecha',
+          horaInicioLabel: fecha
+            ? fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+            : ''
+        };
+      });
+
+    const tareasPorEstado = {
+      pendiente: tareas.filter(t => t.estado === 'pendiente').length,
+      enProceso: tareas.filter(t => t.estado === 'en proceso').length,
+      finalizada: tareas.filter(t => t.estado === 'finalizada').length
+    };
+
+    const tareasRecientes = [...tareas]
+      .sort((a, b) => {
+        const fechaA = a.updatedAt || a.createdAt || ahora;
+        const fechaB = b.updatedAt || b.createdAt || ahora;
+        return new Date(fechaB) - new Date(fechaA);
+      })
+      .slice(0, 6)
+      .map(tarea => {
+        const fecha = tarea.updatedAt || tarea.createdAt || null;
+        const estadoBadge = tarea.estado === 'finalizada'
+          ? 'bg-success'
+          : tarea.estado === 'en proceso'
+            ? 'bg-info'
+            : 'bg-warning';
+        return {
+          id: tarea.id,
+          titulo: tarea.titulo,
+          estado: tarea.estado || 'pendiente',
+          fechaLabel: fecha ? new Date(fecha).toLocaleString('es-AR') : 'Sin fecha',
+          badgeClass: estadoBadge
+        };
+      });
+
+    const resumen = {
+      totalEventos: eventos.length,
+      eventosActivos: (eventosPorEstado.en_curso || 0) + (eventosPorEstado.planificacion || 0),
+      eventosCerrados: (eventosPorEstado.cerrado || 0) + (eventosPorEstado.ejecutado || 0),
+      totalClientes: clientes.length,
+      totalEmpleados: empleados.length,
+      tareasPendientes: tareasPorEstado.pendiente,
+      tareasEnProceso: tareasPorEstado.enProceso,
+      tareasFinalizadas: tareasPorEstado.finalizada
+    };
+
+    const metricCards = [
+      { label: 'Eventos totales', value: resumen.totalEventos, icon: 'calendar-event', color: 'primary', subtitle: 'Registrados en el sistema' },
+      { label: 'Eventos activos', value: resumen.eventosActivos, icon: 'play-circle', color: 'success', subtitle: 'En planificación o ejecución' },
+      { label: 'Clientes', value: resumen.totalClientes, icon: 'people-fill', color: 'info', subtitle: 'Contactos corporativos' },
+      { label: 'Empleados', value: resumen.totalEmpleados, icon: 'person-badge', color: 'warning', subtitle: 'Usuarios internos' }
+    ];
+
+    const totalTareas = tareasPorEstado.pendiente + tareasPorEstado.enProceso + tareasPorEstado.finalizada;
+    const tareasPorEstadoPercent = totalTareas > 0 ? {
+      pendiente: Math.round((tareasPorEstado.pendiente / totalTareas) * 100),
+      enProceso: Math.round((tareasPorEstado.enProceso / totalTareas) * 100),
+      finalizada: Math.round((tareasPorEstado.finalizada / totalTareas) * 100)
+    } : { pendiente: 0, enProceso: 0, finalizada: 0 };
+
+    const estadosEvento = [
+      { clave: 'planificacion', label: 'Planificación', color: 'primary' },
+      { clave: 'en_curso', label: 'En curso', color: 'info' },
+      { clave: 'ejecutado', label: 'Ejecutado', color: 'success' },
+      { clave: 'cerrado', label: 'Cerrado', color: 'secondary' },
+      { clave: 'cancelado', label: 'Cancelado', color: 'danger' }
+    ];
+
+    const totalEstados = estadosEvento.reduce((acc, estado) => acc + (eventosPorEstado[estado.clave] || 0), 0);
+    const distribucionEventos = estadosEvento.map(estado => ({
+      ...estado,
+      cantidad: eventosPorEstado[estado.clave] || 0,
+      porcentaje: totalEstados > 0 ? Math.round(((eventosPorEstado[estado.clave] || 0) / totalEstados) * 100) : 0,
+      badgeClass: `bg-${estado.color}`
+    }));
+
+    const accesosRapidos = [
+      { label: 'Nuevo evento', icon: 'calendar-plus', route: '/eventos/nuevo', color: 'primary' },
+      { label: 'Nuevo cliente', icon: 'person-plus', route: '/clientes/nuevo', color: 'success' },
+      { label: 'Nueva tarea', icon: 'list-check', route: '/tareas/nuevo', color: 'info' },
+      { label: 'Nueva cotización', icon: 'file-earmark-text', route: '/cotizaciones/nuevo', color: 'warning' }
+    ];
 
     res.render('index', {
-      title: 'Eventify - Backend',
-      tareas,
-      empleados,
-      clientes,
-      eventos
+      title: 'Dashboard - Eventify',
+      resumen,
+      eventosProximos,
+      tareasRecientes,
+      tareasPorEstado,
+      tareasPorEstadoPercent,
+      distribucionEventos,
+      metricCards,
+      accesosRapidos,
+      totalTareas,
+      totalEstados
     });
   } catch (error) {
     console.error('Error al cargar index:', error);

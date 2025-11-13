@@ -32,7 +32,7 @@ block content
                   td= invitado.apellido
                   td= invitado.email || '-'
                   td= invitado.telefono || '-'
-                  td= invitado.evento?.nombre || '-'
+                  td= (invitado.evento && invitado.evento.nombre) || '-'
                   td
                     .btn-group
                       a.btn.btn-sm.btn-outline-primary(href=`/invitados/${invitado.id}`)

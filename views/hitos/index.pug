@@ -30,7 +30,7 @@ block content
               each hito in hitos
                 tr
                   td= hito.nombre
-                  td= hito.evento?.nombre || '-'
+                  td= (hito.evento && hito.evento.nombre) || '-'
                   td= hito.fechaInicio ? new Date(hito.fechaInicio).toLocaleDateString() : '-'
                   td= hito.fechaFin ? new Date(hito.fechaFin).toLocaleDateString() : '-'
                   td
