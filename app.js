@@ -73,67 +73,47 @@ const sessionConfig = {
 // Esto previene el error "You must provide either mongoUrl|clientPromise|client in options"
 const mongoUri = process.env.MONGODB_URI;
 
-// Validación exhaustiva con logging
-console.log('🔍 Verificando MONGODB_URI para MongoStore...');
-console.log('MONGODB_URI existe:', !!mongoUri);
-console.log('Tipo de MONGODB_URI:', typeof mongoUri);
+// Validación optimizada (sin logs excesivos en producción)
+const isVercelEnv = process.env.VERCEL || process.env.VERCEL_ENV;
+const isDev = process.env.NODE_ENV !== 'production';
 
 let hasValidMongoUri = false;
 let trimmedUri = '';
 
-// Validación exhaustiva paso a paso
+// Validación optimizada
 if (!mongoUri) {
-  console.warn('⚠️  MONGODB_URI no está definida, usando sesiones en memoria');
+  if (isDev) console.warn('⚠️  MONGODB_URI no está definida, usando sesiones en memoria');
 } else if (typeof mongoUri !== 'string') {
-  console.warn('⚠️  MONGODB_URI no es una cadena, usando sesiones en memoria');
+  if (isDev) console.warn('⚠️  MONGODB_URI no es una cadena, usando sesiones en memoria');
 } else {
   trimmedUri = mongoUri.trim();
-  console.log('MONGODB_URI trimmed length:', trimmedUri.length);
-  console.log('MONGODB_URI starts with mongodb:', trimmedUri.startsWith('mongodb://') || trimmedUri.startsWith('mongodb+srv://'));
   
   if (trimmedUri.length === 0) {
-    console.warn('⚠️  MONGODB_URI está vacía después de trim, usando sesiones en memoria');
+    if (isDev) console.warn('⚠️  MONGODB_URI está vacía después de trim, usando sesiones en memoria');
   } else if (!trimmedUri.startsWith('mongodb://') && !trimmedUri.startsWith('mongodb+srv://')) {
-    console.warn('⚠️  MONGODB_URI no tiene formato válido, usando sesiones en memoria');
+    if (isDev) console.warn('⚠️  MONGODB_URI no tiene formato válido, usando sesiones en memoria');
   } else {
     hasValidMongoUri = true;
-    console.log('✅ MONGODB_URI es válida, intentando crear MongoStore');
+    if (isDev) console.log('✅ MONGODB_URI es válida, creando MongoStore');
   }
 }
 
-// Solo crear MongoStore si hay una URI válida Y no está vacía
-// Verificación final antes de crear MongoStore
-if (hasValidMongoUri && trimmedUri && typeof trimmedUri === 'string' && trimmedUri.length > 10) {
-  // Verificación adicional: asegurar que trimmedUri realmente tiene un valor válido
-  const finalUri = String(trimmedUri).trim();
-  if (finalUri && finalUri.length > 0 && (finalUri.startsWith('mongodb://') || finalUri.startsWith('mongodb+srv://'))) {
-    try {
-      console.log('🔧 Creando MongoStore con URI (primeros 30 chars):', finalUri.substring(0, 30));
-      // Verificación final antes de llamar a create
-      if (!finalUri || finalUri.length === 0) {
-        throw new Error('URI está vacía');
-      }
-      const store = MongoStore.create({
-        mongoUrl: finalUri,
-        ttl: 14 * 24 * 60 * 60 // 14 días
-      });
-      sessionConfig.store = store;
-      console.log('✅ MongoStore configurado exitosamente para sesiones');
-    } catch (error) {
+// Solo crear MongoStore si hay una URI válida
+if (hasValidMongoUri && trimmedUri && trimmedUri.length > 10) {
+  try {
+    const store = MongoStore.create({
+      mongoUrl: trimmedUri,
+      ttl: 14 * 24 * 60 * 60 // 14 días
+    });
+    sessionConfig.store = store;
+    if (isDev) console.log('✅ MongoStore configurado para sesiones');
+  } catch (error) {
+    if (isDev) {
       console.error('❌ Error al crear MongoStore:', error.message);
-      console.error('Stack:', error.stack);
       console.warn('⚠️  Continuando con sesiones en memoria');
-      // NO asignar store - usar sesiones en memoria
     }
-  } else {
-    console.warn('⚠️  URI final no es válida, usando sesiones en memoria');
+    // NO asignar store - usar sesiones en memoria
   }
-} else {
-  console.warn('⚠️  No se creará MongoStore - usando sesiones en memoria');
-  console.warn('hasValidMongoUri:', hasValidMongoUri);
-  console.warn('trimmedUri existe:', !!trimmedUri);
-  console.warn('trimmedUri length:', trimmedUri ? trimmedUri.length : 0);
-  // No crear MongoStore - usar sesiones en memoria
 }
 
 app.use(session(sessionConfig));
