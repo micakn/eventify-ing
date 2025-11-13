@@ -9,7 +9,15 @@
   "routes": [
     {
       "src": "/css/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Type": "text/css"
+      },
       "dest": "/publics/css/$1"
+    },
+    {
+      "src": "/publics/(.*)",
+      "dest": "/publics/$1"
     },
     {
       "src": "/(.*)",

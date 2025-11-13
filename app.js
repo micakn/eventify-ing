@@ -122,8 +122,18 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Archivos estáticos
-app.use(express.static(path.join(__dirname, 'publics')));
+// Archivos estáticos - DEBE estar antes de otros middlewares
+// Configurar con opciones explícitas para Vercel
+app.use('/css', express.static(path.join(__dirname, 'publics', 'css'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true
+}));
+app.use(express.static(path.join(__dirname, 'publics'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true
+}));
 
 // Middleware para currentPath y usuario (útil en layout)
 app.use((req, res, next) => {
