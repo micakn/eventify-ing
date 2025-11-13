@@ -5,3 +5,4 @@ node_modules/
 # Coverage
 coverage/
 *.lcov
+CODIGO_EVENTIFY_BACKEND.txt
