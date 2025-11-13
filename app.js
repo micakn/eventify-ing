@@ -310,22 +310,6 @@ app.get('/login', (req, res) => {
   res.render('auth/login', { title: 'Login - Eventify' });
 });
 
-// Ruta para forzar logout (útil para limpiar sesiones)
-app.get('/logout', (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      console.error('Error al cerrar sesión:', err);
-    }
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Error al destruir sesión:', err);
-      }
-      res.clearCookie('connect.sid');
-      res.redirect('/login');
-    });
-  });
-});
-
 // Autenticación (login/logout) - debe estar antes de requireAuth
 app.use('/auth', authRoutes);
 
