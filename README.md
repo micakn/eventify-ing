@@ -43,6 +43,8 @@
    - O usa `mongodb://localhost:27017/eventify` si tienes MongoDB instalado localmente
    - **Para producción:** Genera valores seguros y aleatorios para `JWT_SECRET` y `SESSION_SECRET` usando: `openssl rand -base64 32`
 
+   ```
+
 4. **Crear usuario administrador**
 
    ```bash
