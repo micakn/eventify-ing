@@ -65,8 +65,11 @@ const sessionConfig = {
   cookie: {
     secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
     httpOnly: true,
-    maxAge: 14 * 24 * 60 * 60 * 1000 // 14 días
-  }
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 días
+    sameSite: 'lax', // Importante para Vercel
+    domain: undefined // No establecer dominio para que funcione en Vercel
+  },
+  name: 'connect.sid' // Nombre explícito de la cookie
 };
 
 // Validar MONGODB_URI ANTES de intentar crear MongoStore

@@ -42,9 +42,36 @@ const loginWeb = asyncHandler(async (req, res, next) => {
       // No interrumpir el flujo si falla la auditoría
     }
     
+    // Verificar que la sesión esté establecida antes de redirigir
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      console.error('❌ Error: Sesión no establecida después del login');
+      return res.status(500).render('auth/login', {
+        title: 'Login - Eventify',
+        error: 'Error al establecer sesión. Por favor, intenta nuevamente.'
+      });
+    }
+
+    // Verificar que el usuario esté disponible
+    if (!req.user) {
+      console.error('❌ Error: req.user no está disponible después del login');
+      return res.status(500).render('auth/login', {
+        title: 'Login - Eventify',
+        error: 'Error al iniciar sesión. Por favor, intenta nuevamente.'
+      });
+    }
+
     // Redirigir según el rol
     const redirectUrl = getRedirectUrlByRole(req.user.rol);
-    res.redirect(redirectUrl);
+    console.log(`✅ Login exitoso para ${req.user.email || 'usuario'}, redirigiendo a: ${redirectUrl}`);
+    
+    // Usar redirect absoluto para evitar problemas en Vercel
+    try {
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('❌ Error al redirigir:', error);
+      // Fallback: redirigir manualmente
+      res.status(302).location(redirectUrl).end();
+    }
   });
 });
 
