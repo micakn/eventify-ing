@@ -60,10 +60,29 @@ export default async function handler(req, res) {
     // Obtener la app (ya pre-cargada o cargarla ahora)
     const expressApp = await appPromise;
     
-    // Asegurar conexión a MongoDB (ya pre-conectada o conectar ahora)
-    // No esperamos si ya está conectando, para no bloquear la request
-    if (process.env.MONGODB_URI && !mongoConnected) {
-      initMongo().catch(() => {}); // Fire and forget
+    // Asegurar conexión a MongoDB ANTES de procesar la request
+    // Esto es crítico para que las queries funcionen correctamente
+    if (process.env.MONGODB_URI) {
+      try {
+        // Si no está conectado, esperar a que se conecte
+        if (!mongoConnected) {
+          await initMongo();
+        }
+        // Verificar que la conexión esté realmente activa
+        // Importar mongoose para verificar el estado
+        const mongooseModule = await import('mongoose');
+        const mongoose = mongooseModule.default;
+        
+        if (mongoose.connection.readyState !== 1) {
+          // Si no está conectado, intentar reconectar
+          mongoConnected = false;
+          mongoPromise = null;
+          await initMongo();
+        }
+      } catch (mongoError) {
+        console.error('❌ Error al conectar MongoDB en handler:', mongoError.message);
+        // Continuar de todas formas, pero la conexión puede fallar
+      }
     }
     
     // Ejecutar Express directamente
