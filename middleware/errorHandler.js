@@ -49,9 +49,7 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // Error genérico del servidor
-  // En Vercel, mostrar más información para debugging
-  const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
-  const showDetails = process.env.NODE_ENV === 'development' || isVercel;
+  const showDetails = process.env.NODE_ENV === 'development';
   
   res.status(500).json({
     mensaje: 'Error interno del servidor',

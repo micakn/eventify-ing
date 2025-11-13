@@ -62,16 +62,7 @@ const loginWeb = asyncHandler(async (req, res, next) => {
 
     // Redirigir según el rol
     const redirectUrl = getRedirectUrlByRole(req.user.rol);
-    console.log(`✅ Login exitoso para ${req.user.email || 'usuario'}, redirigiendo a: ${redirectUrl}`);
-    
-    // Usar redirect absoluto para evitar problemas en Vercel
-    try {
-      res.redirect(redirectUrl);
-    } catch (error) {
-      console.error('❌ Error al redirigir:', error);
-      // Fallback: redirigir manualmente
-      res.status(302).location(redirectUrl).end();
-    }
+    res.redirect(redirectUrl);
   });
 });
 

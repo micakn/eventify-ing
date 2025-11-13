@@ -1,10 +1,75 @@
 # 📋 Documento de Ingeniería de Software - ERP para Eventify
 
-## 🚀 Sistema en Producción
+## 🚀 Inicio Rápido - Localhost
 
-**✅ El sistema está desplegado y disponible en:**
+### Instalación y Configuración
 
-🔗 **URL de Producción**: [Vercel](https://eventify-ing.vercel.app/)
+1. **Clonar el repositorio**
+   ```bash
+   git clone <url-del-repositorio>
+   cd eventify-ing
+   ```
+
+2. **Instalar dependencias**
+   ```bash
+   npm install
+   ```
+
+3. **Configurar variables de entorno**
+   
+   Crea un archivo `.env` en la raíz del proyecto con:
+   ```env
+   # Servidor
+   PORT=3000
+   NODE_ENV=development
+
+   # Base de datos
+   MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/eventify
+
+   # Autenticación
+   JWT_SECRET=tu-secret-key-muy-segura-cambiar-en-produccion
+   JWT_EXPIRES_IN=24h
+   SESSION_SECRET=tu-session-secret-cambiar-en-produccion
+   ```
+
+4. **Crear usuario administrador**
+   ```bash
+   node scripts/createAdmin.js
+   ```
+   
+   Esto creará un usuario con:
+   - **Email:** `admin@eventify.com`
+   - **Contraseña:** `admin123`
+
+5. **Opcional: Cargar datos de prueba**
+   ```bash
+   npm run seed
+   ```
+   
+   Esto creará datos de ejemplo (clientes, empleados, eventos, etc.)
+   - Todos los usuarios tienen la contraseña: `password123`
+   - Emails de ejemplo: `alex.lopez@eventify.com`, `maria.garcia@eventify.com`, etc.
+
+6. **Iniciar el servidor**
+   ```bash
+   npm start
+   ```
+   
+   O en modo desarrollo (con auto-restart):
+   ```bash
+   npm run dev
+   ```
+
+7. **Acceder al sistema**
+   
+   Abre tu navegador y ve a:
+   ```
+   http://localhost:3000/login
+   ```
+   
+   **Credenciales:**
+   - **Email:** `admin@eventify.com`
+   - **Contraseña:** `admin123`
 
 ---
 
@@ -12,7 +77,7 @@
 
 **ERP para Eventify** es un sistema de gestión integral desarrollado para transformar la operación de Eventify, una empresa dedicada a la organización integral de eventos sociales, empresariales y culturales. Este documento presenta la propuesta completa de desarrollo, desde el análisis de la problemática actual hasta la implementación de un ERP a medida que integre todas las áreas de la empresa en una única plataforma.
 
-El sistema está **completamente funcional y desplegado en producción** en Vercel, permitiendo que Eventify comience a utilizar el ERP inmediatamente.
+El sistema está **completamente funcional** y listo para ser utilizado en producción.
 
 ---
 
@@ -847,7 +912,7 @@ El costo del proyecto se estima en función de las **horas de desarrollo** y los
 #### Costos de Infraestructura (6 meses)
 
 - **MongoDB Atlas** (M10 Cluster): $57/mes × 6 meses = $342
-- **Hosting/Deployment** (Vercel Pro): $20/mes × 6 meses = $120
+- **Hosting/Deployment**: $20/mes × 6 meses = $120
 - **Dominio y SSL**: $15/año = $15
 - **Servicios de email** (SendGrid/SMTP): $15/mes × 6 meses = $90
 - **Almacenamiento de archivos** (Cloudinary/AWS S3): $10/mes × 6 meses = $60
@@ -1051,7 +1116,6 @@ Agradecemos su atención y dejamos abierto este espacio para preguntas y comenta
 
 - **Repositorio**: [eventify-ing](https://github.com/micakn/eventify-ing)
 - **Documentación Técnica**: Ver carpeta `docs/` para documentación detallada
-- **Despliegue en Producción**: [Vercel](https://eventify-ing.vercel.app/)
 
 ---
 

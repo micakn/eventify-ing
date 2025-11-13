@@ -36,12 +36,7 @@ import { connectMongo } from './db/mongoose.js';
 import mongoose from 'mongoose';
 
 // -------------------- Configuración --------------------
-// Solo cargar dotenv si no estamos en Vercel (donde las variables ya están disponibles)
-// Vercel establece VERCEL=1 o VERCEL_ENV
-const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
-if (!isVercel) {
-  dotenv.config();
-}
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,77 +51,33 @@ app.use(express.urlencoded({ extended: true })); // Formularios
 app.use(methodOverride('_method')); // Permite usar DELETE/PUT desde formularios
 
 // -------------------- Configuración de Sesiones --------------------
-// Configurar sesiones con MongoStore solo si MONGODB_URI está disponible y es válido
-// En serverless, usar sesiones en memoria como fallback
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'tu-session-secret-cambiar-en-produccion',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 días
-    sameSite: 'lax', // Importante para Vercel
-    domain: undefined // No establecer dominio para que funcione en Vercel
-  },
-  name: 'connect.sid' // Nombre explícito de la cookie
+    maxAge: 14 * 24 * 60 * 60 * 1000 // 14 días
+  }
 };
 
-// Validar MONGODB_URI ANTES de intentar crear MongoStore
-// Esto previene el error "You must provide either mongoUrl|clientPromise|client in options"
+// Configurar MongoStore si MONGODB_URI está disponible
 const mongoUri = process.env.MONGODB_URI;
-
-// Validación optimizada (sin logs excesivos en producción)
-const isVercelEnv = process.env.VERCEL || process.env.VERCEL_ENV;
-const isDev = process.env.NODE_ENV !== 'production';
-
-let hasValidMongoUri = false;
-let trimmedUri = '';
-
-// Validación optimizada
-if (!mongoUri) {
-  if (isDev) console.warn('⚠️  MONGODB_URI no está definida, usando sesiones en memoria');
-} else if (typeof mongoUri !== 'string') {
-  if (isDev) console.warn('⚠️  MONGODB_URI no es una cadena, usando sesiones en memoria');
-} else {
-  trimmedUri = mongoUri.trim();
-  
-  if (trimmedUri.length === 0) {
-    if (isDev) console.warn('⚠️  MONGODB_URI está vacía después de trim, usando sesiones en memoria');
-  } else if (!trimmedUri.startsWith('mongodb://') && !trimmedUri.startsWith('mongodb+srv://')) {
-    if (isDev) console.warn('⚠️  MONGODB_URI no tiene formato válido, usando sesiones en memoria');
-  } else {
-    hasValidMongoUri = true;
-    if (isDev) console.log('✅ MONGODB_URI es válida, creando MongoStore');
-  }
-}
-
-// Solo crear MongoStore si hay una URI válida
-// En Vercel, MongoStore es CRÍTICO porque las sesiones en memoria no funcionan
-if (hasValidMongoUri && trimmedUri && trimmedUri.length > 10) {
+if (mongoUri && typeof mongoUri === 'string' && mongoUri.trim().length > 0) {
   try {
     const store = MongoStore.create({
-      mongoUrl: trimmedUri,
-      ttl: 14 * 24 * 60 * 60, // 14 días
-      touchAfter: 24 * 3600, // Lazy session update (1 día)
-      autoRemove: 'native', // Usar TTL nativo de MongoDB
-      stringify: false // Usar objetos nativos de MongoDB
+      mongoUrl: mongoUri.trim(),
+      ttl: 14 * 24 * 60 * 60 // 14 días
     });
     sessionConfig.store = store;
     console.log('✅ MongoStore configurado para sesiones en MongoDB');
   } catch (error) {
     console.error('❌ Error al crear MongoStore:', error.message);
-    // En Vercel, NO podemos usar sesiones en memoria - fallar explícitamente
-    if (isVercelEnv) {
-      console.error('❌ CRÍTICO: MongoStore falló en Vercel. Las sesiones NO funcionarán.');
-      console.error('💡 Verifica que MONGODB_URI esté correctamente configurada en Vercel');
-    } else {
-      console.warn('⚠️  Continuando con sesiones en memoria (solo para desarrollo local)');
-    }
+    console.warn('⚠️  Continuando con sesiones en memoria');
   }
-} else if (isVercelEnv) {
-  // En Vercel, sin MongoStore las sesiones no funcionarán
-  console.error('❌ CRÍTICO: MONGODB_URI no está configurada. Las sesiones NO funcionarán en Vercel.');
+} else {
+  console.warn('⚠️  MONGODB_URI no configurada, usando sesiones en memoria');
 }
 
 app.use(session(sessionConfig));
@@ -135,18 +86,9 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Archivos estáticos - DEBE estar antes de otros middlewares
-// Configurar con opciones explícitas para Vercel
-app.use('/css', express.static(path.join(__dirname, 'publics', 'css'), {
-  maxAge: '1y',
-  etag: true,
-  lastModified: true
-}));
-app.use(express.static(path.join(__dirname, 'publics'), {
-  maxAge: '1y',
-  etag: true,
-  lastModified: true
-}));
+// Archivos estáticos
+app.use('/css', express.static(path.join(__dirname, 'publics', 'css')));
+app.use(express.static(path.join(__dirname, 'publics')));
 
 // Middleware para currentPath y usuario (útil en layout)
 app.use((req, res, next) => {
@@ -161,15 +103,13 @@ app.set('views', path.join(__dirname, 'views'));
 
 // -------------------- Rutas --------------------
 
-// Health check endpoint (útil para debugging en Vercel)
+// Health check endpoint (útil para debugging)
 app.get('/health', async (req, res) => {
-  // Intentar conectar si no está conectado
   let connectionStatus = mongoose.connection.readyState;
   let connectionError = null;
   
   if (process.env.MONGODB_URI && connectionStatus !== 1) {
     try {
-      const { connectMongo } = await import('./db/mongoose.js');
       await connectMongo(process.env.MONGODB_URI);
       connectionStatus = mongoose.connection.readyState;
     } catch (error) {
@@ -182,11 +122,10 @@ app.get('/health', async (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    vercel: !!(process.env.VERCEL || process.env.VERCEL_ENV),
     mongodb: {
       configured: !!process.env.MONGODB_URI,
       connected: connectionStatus === 1,
-      readyState: connectionStatus, // 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+      readyState: connectionStatus,
       error: connectionError || null
     },
     variables: {
@@ -465,8 +404,5 @@ app.use((req, res) => {
 // -------------------- Middleware de manejo de errores (debe ir al final) --------------------
 app.use(errorHandler);
 
-// Exportar la aplicación para uso en tests y Vercel
-// NOTA: El servidor se inicia a través de:
-// - server.js en producción local (npm start)
-// - api/index.js en Vercel
+// Exportar la aplicación para uso en tests
 export default app;

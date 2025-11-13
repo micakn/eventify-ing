@@ -1,8 +1,7 @@
 // db/mongoose.js
 import mongoose from 'mongoose';
 
-// Cachear la conexión para entornos serverless (Vercel)
-// Esto permite reutilizar la conexión entre invocaciones
+// Cachear la conexión para reutilizar entre invocaciones
 let cached = global.mongoose;
 
 if (!cached) {
@@ -25,10 +24,10 @@ export async function connectMongo(uri) {
     
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000, // Aumentado a 10s para Vercel
-      connectTimeoutMS: 10000, // Aumentado a 10s para Vercel
-      socketTimeoutMS: 45000, // Timeout de socket
-      maxPoolSize: 1, // En serverless, solo necesitamos 1 conexión
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
       minPoolSize: 1,
       retryWrites: true,
       w: 'majority',
@@ -58,12 +57,6 @@ export async function connectMongo(uri) {
   } catch (e) {
     cached.promise = null;
     console.error('❌ Error al conectar con MongoDB:', e.message);
-    // En entornos serverless (Vercel), no hacer process.exit
-    // Permitir que se reintente en la próxima invocación
-    const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
-    if (process.env.NODE_ENV !== 'production' || !isVercel) {
-      process.exit(1);
-    }
     throw e;
   }
 

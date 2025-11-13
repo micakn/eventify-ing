@@ -28,16 +28,8 @@ export const authenticateSession = (req, res, next) => {
 
 // -------------------- MIDDLEWARE: Verificar sesión activa (para rutas web) --------------------
 export const requireAuth = (req, res, next) => {
-  // Log para debugging en Vercel
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
-  const hasUser = !!req.user;
-  
-  if (process.env.VERCEL || process.env.VERCEL_ENV) {
-    console.log(`🔐 requireAuth - isAuthenticated: ${isAuthenticated}, hasUser: ${hasUser}, path: ${req.path}`);
-  }
-  
   // Verificar si hay una sesión activa
-  if (isAuthenticated) {
+  if (req.isAuthenticated && req.isAuthenticated()) {
     // Verificar que el usuario existe y está activo
     if (req.user && req.user.activo !== false) {
       return next();
@@ -51,9 +43,6 @@ export const requireAuth = (req, res, next) => {
   }
   
   // Si no está autenticado, redirigir al login
-  if (process.env.VERCEL || process.env.VERCEL_ENV) {
-    console.log(`❌ requireAuth falló - redirigiendo a /login desde ${req.path}`);
-  }
   res.redirect('/login');
 };
 
