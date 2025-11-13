@@ -2,12 +2,18 @@
 
 ## 🚀 Inicio Rápido - Localhost
 
+### Requisitos Previos
+
+- **Node.js** versión 18 o superior
+- **MongoDB** (local o MongoDB Atlas)
+- **npm** o **yarn**
+
 ### Instalación y Configuración
 
 1. **Clonar el repositorio**
 
    ```bash
-   git clone <url-del-repositorio>
+   git clone https://github.com/micakn/eventify-ing.git
    cd eventify-ing
    ```
 
@@ -19,21 +25,29 @@
 
 3. **Configurar variables de entorno**
 
-   Crea un archivo `.env` en la raíz del proyecto con:
+   Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
    ```env
    # Servidor
    PORT=3000
    NODE_ENV=development
 
-   # Base de datos
+   # Base de datos MongoDB
+   # Para MongoDB Atlas: mongodb+srv://usuario:password@cluster.mongodb.net/eventify
+   # Para MongoDB local: mongodb://localhost:27017/eventify
    MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/eventify
 
-   # Autenticación
+   # Autenticación - Genera valores seguros para producción
    JWT_SECRET=tu-secret-key-muy-segura-cambiar-en-produccion
    JWT_EXPIRES_IN=24h
    SESSION_SECRET=tu-session-secret-cambiar-en-produccion
    ```
+
+   **Nota:**
+
+   - Reemplaza `usuario`, `password` y `cluster.mongodb.net` con tus credenciales de MongoDB Atlas
+   - O usa `mongodb://localhost:27017/eventify` si tienes MongoDB instalado localmente
+   - Genera valores seguros para `JWT_SECRET` y `SESSION_SECRET` (puedes usar: `openssl rand -base64 32`)
 
 4. **Crear usuario administrador**
 
@@ -41,10 +55,13 @@
    node scripts/createAdmin.js
    ```
 
-   Esto creará un usuario con:
+   Esto creará un usuario administrador con:
 
    - **Email:** `admin@eventify.com`
    - **Contraseña:** `admin123`
+   - **Rol:** Administrador
+
+   ⚠️ **Importante:** Cambia la contraseña después del primer login en producción.
 
 5. **Opcional: Cargar datos de prueba**
 
@@ -52,22 +69,26 @@
    npm run seed
    ```
 
-   Esto creará datos de ejemplo (clientes, empleados, eventos, etc.)
+   Esto creará datos de ejemplo (clientes, empleados, eventos, tareas, etc.)
 
-   - Todos los usuarios tienen la contraseña: `password123`
+   - Todos los usuarios de prueba tienen la contraseña: `password123`
    - Emails de ejemplo: `alex.lopez@eventify.com`, `maria.garcia@eventify.com`, etc.
 
 6. **Iniciar el servidor**
+
+   En modo producción:
 
    ```bash
    npm start
    ```
 
-   O en modo desarrollo (con auto-restart):
+   O en modo desarrollo (con auto-restart al guardar cambios):
 
    ```bash
    npm run dev
    ```
+
+   El servidor estará disponible en: `http://localhost:3000`
 
 7. **Acceder al sistema**
 
@@ -77,10 +98,17 @@
    http://localhost:3000/login
    ```
 
-   **Credenciales:**
+   **Credenciales por defecto:**
 
    - **Email:** `admin@eventify.com`
    - **Contraseña:** `admin123`
+
+### Solución de Problemas
+
+- **Error de conexión a MongoDB:** Verifica que `MONGODB_URI` esté correctamente configurada en el archivo `.env`
+- **Error al crear usuario admin:** Asegúrate de que MongoDB esté corriendo y accesible
+- **Puerto en uso:** Cambia el `PORT` en el archivo `.env` si el puerto 3000 está ocupado
+- **Dependencias faltantes:** Ejecuta `npm install` nuevamente
 
 ---
 
