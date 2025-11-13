@@ -139,7 +139,22 @@ app.set('views', path.join(__dirname, 'views'));
 // -------------------- Rutas --------------------
 
 // Health check endpoint (útil para debugging en Vercel)
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  // Intentar conectar si no está conectado
+  let connectionStatus = mongoose.connection.readyState;
+  let connectionError = null;
+  
+  if (process.env.MONGODB_URI && connectionStatus !== 1) {
+    try {
+      const { connectMongo } = await import('./db/mongoose.js');
+      await connectMongo(process.env.MONGODB_URI);
+      connectionStatus = mongoose.connection.readyState;
+    } catch (error) {
+      connectionError = error.message;
+      connectionStatus = mongoose.connection.readyState;
+    }
+  }
+  
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -147,7 +162,9 @@ app.get('/health', (req, res) => {
     vercel: !!(process.env.VERCEL || process.env.VERCEL_ENV),
     mongodb: {
       configured: !!process.env.MONGODB_URI,
-      connected: mongoose.connection.readyState === 1
+      connected: connectionStatus === 1,
+      readyState: connectionStatus, // 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+      error: connectionError || null
     },
     variables: {
       hasJwtSecret: !!process.env.JWT_SECRET,

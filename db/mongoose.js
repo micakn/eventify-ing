@@ -25,11 +25,13 @@ export async function connectMongo(uri) {
     
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000, // Reducido de 10s a 5s para respuestas más rápidas
-      connectTimeoutMS: 5000, // Timeout de conexión más corto
+      serverSelectionTimeoutMS: 10000, // Aumentado a 10s para Vercel
+      connectTimeoutMS: 10000, // Aumentado a 10s para Vercel
       socketTimeoutMS: 45000, // Timeout de socket
       maxPoolSize: 1, // En serverless, solo necesitamos 1 conexión
       minPoolSize: 1,
+      retryWrites: true,
+      w: 'majority',
     };
 
     cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
