@@ -1,6 +1,6 @@
 # 📋 Documento de Ingeniería de Software - ERP para Eventify
 
-## 🚀 Inicio Rápido - Localhost
+## 🎯 Resumen Ejecutivo
 
 ### Requisitos Previos
 
