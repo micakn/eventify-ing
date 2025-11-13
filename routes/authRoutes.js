@@ -3,12 +3,35 @@
 import express from 'express';
 import authController from '../controllers/authController.js';
 import { authenticateJWT, requireAuth, requireRole } from '../middleware/auth.js';
-import { body } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import { validate } from '../middleware/validations.js';
 
 const router = express.Router();
 
 // -------------------- VALIDACIONES --------------------
+// Middleware de validación para rutas web (renderiza vista en caso de error)
+const validateLoginWeb = [
+  body('email')
+    .trim()
+    .notEmpty().withMessage('El email es obligatorio')
+    .isEmail().withMessage('El email no tiene un formato válido')
+    .normalizeEmail(),
+  body('password')
+    .notEmpty().withMessage('La contraseña es obligatoria')
+    .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render('auth/login', {
+        title: 'Login - Eventify',
+        error: errors.array()[0].msg
+      });
+    }
+    next();
+  }
+];
+
+// Validación para API (devuelve JSON)
 const validateLogin = [
   body('email')
     .trim()
@@ -41,7 +64,10 @@ const validateRegister = [
 
 // -------------------- RUTAS WEB (Sesiones) --------------------
 // Estas rutas usan sesiones de Passport
-router.post('/login', validateLogin, authController.loginWeb);
+router.post('/login', (req, res, next) => {
+  console.log('🔐 POST /auth/login recibido');
+  next();
+}, validateLoginWeb, authController.loginWeb);
 router.post('/logout', requireAuth, authController.logoutWeb);
 
 // -------------------- RUTAS API (JWT) --------------------
