@@ -69,8 +69,23 @@ router.post('/login', (req, res, next) => {
   next();
 }, validateLoginWeb, authController.loginWeb);
 // Logout: acepta tanto GET (desde enlaces) como POST (desde formularios)
-router.get('/logout', requireAuth, authController.logoutWeb);
-router.post('/logout', requireAuth, authController.logoutWeb);
+// No requiere requireAuth estricto porque puede que la sesión ya esté en proceso de cerrarse
+router.get('/logout', (req, res, next) => {
+  // Si hay usuario, permitir continuar, si no, redirigir directamente al login
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+    return next();
+  }
+  // Si no hay sesión, limpiar cookies y redirigir
+  res.clearCookie('connect.sid', { path: '/', httpOnly: true });
+  res.redirect('/login');
+}, authController.logoutWeb);
+router.post('/logout', (req, res, next) => {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+    return next();
+  }
+  res.clearCookie('connect.sid', { path: '/', httpOnly: true });
+  res.redirect('/login');
+}, authController.logoutWeb);
 
 // -------------------- RUTAS API (JWT) --------------------
 router.post('/api/login', validateLogin, authController.loginAPI);
