@@ -4,7 +4,7 @@
 
 **✅ El sistema está desplegado y disponible en:**
 
-🔗 **URL de Producción**: [Vercel](https://eventify-ifptvcdrr-micaela-knass-projects.vercel.app)
+🔗 **URL de Producción**: [Vercel](https://eventify-ing.vercel.app/)
 
 ---
 
@@ -1051,7 +1051,7 @@ Agradecemos su atención y dejamos abierto este espacio para preguntas y comenta
 
 - **Repositorio**: [eventify-ing](https://github.com/micakn/eventify-ing)
 - **Documentación Técnica**: Ver carpeta `docs/` para documentación detallada
-- **Despliegue en Producción**: [Vercel](https://eventify-ifptvcdrr-micaela-knass-projects.vercel.app)
+- **Despliegue en Producción**: [Vercel](https://eventify-ing.vercel.app/)
 
 ---
 

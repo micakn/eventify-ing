@@ -364,6 +364,98 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+// -------------------- INICIALIZAR USUARIO ADMINISTRADOR (Solo para producción inicial) --------------------
+const initAdmin = asyncHandler(async (req, res) => {
+  // Verificar que existe la clave secreta de inicialización
+  const initSecret = process.env.INIT_ADMIN_SECRET;
+  
+  if (!initSecret) {
+    return res.status(503).json({
+      mensaje: 'Servicio no disponible',
+      detalle: 'La inicialización de administrador no está configurada'
+    });
+  }
+
+  // Verificar que se proporcionó la clave secreta
+  const providedSecret = req.body.secret || req.query.secret;
+  
+  if (providedSecret !== initSecret) {
+    return res.status(401).json({
+      mensaje: 'No autorizado',
+      detalle: 'Clave secreta inválida'
+    });
+  }
+
+  // Verificar si ya existe un usuario administrador
+  const usuarios = await UsuarioModel.getAll();
+  const adminExists = usuarios.some(u => u.rol === 'administrador');
+  
+  if (adminExists) {
+    return res.status(409).json({
+      mensaje: 'Ya existe un administrador',
+      detalle: 'El sistema ya tiene un usuario administrador. Use el endpoint de registro normal.'
+    });
+  }
+
+  // Buscar o crear un empleado administrador
+  let empleadoAdmin = await EmpleadoModel.getAll();
+  empleadoAdmin = empleadoAdmin.find(e => e.rol === 'administrador');
+
+  if (!empleadoAdmin) {
+    // Crear empleado administrador si no existe
+    empleadoAdmin = await EmpleadoModel.add({
+      nombre: 'Administrador Sistema',
+      rol: 'administrador',
+      area: 'Administración',
+      email: 'admin@eventify.com',
+      telefono: '+5491100000000'
+    });
+    
+    if (!empleadoAdmin) {
+      return res.status(500).json({
+        mensaje: 'Error al crear empleado administrador',
+        detalle: 'No se pudo crear el empleado administrador'
+      });
+    }
+  }
+
+  // Verificar si ya existe un usuario con ese email
+  const usuarioExistente = await UsuarioModel.getByEmail('admin@eventify.com');
+  
+  if (usuarioExistente) {
+    return res.status(409).json({
+      mensaje: 'Usuario ya existe',
+      detalle: 'Ya existe un usuario con el email admin@eventify.com'
+    });
+  }
+
+  // Crear usuario administrador
+  const adminUsuario = await UsuarioModel.add({
+    email: 'admin@eventify.com',
+    password: 'admin123', // Cambiar después del primer login
+    rol: 'administrador',
+    empleado: empleadoAdmin.id,
+    activo: true
+  });
+
+  if (!adminUsuario) {
+    return res.status(500).json({
+      mensaje: 'Error al crear usuario administrador',
+      detalle: 'No se pudo crear el usuario administrador'
+    });
+  }
+
+  res.status(201).json({
+    mensaje: 'Usuario administrador creado exitosamente',
+    detalle: 'Puede iniciar sesión con las credenciales proporcionadas',
+    credenciales: {
+      email: 'admin@eventify.com',
+      password: 'admin123'
+    },
+    advertencia: 'IMPORTANTE: Cambiar la contraseña después del primer login'
+  });
+});
+
 // -------------------- FUNCIÓN AUXILIAR: Obtener URL de redirección por rol --------------------
 function getRedirectUrlByRole(rol) {
   const redirects = {
@@ -383,6 +475,7 @@ export default {
   register,
   verifyToken,
   requestPasswordRecovery,
-  resetPassword
+  resetPassword,
+  initAdmin
 };
 

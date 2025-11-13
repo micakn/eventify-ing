@@ -52,5 +52,11 @@ router.get('/api/verify', authenticateJWT, authController.verifyToken);
 router.post('/api/recovery', authController.requestPasswordRecovery);
 router.post('/api/reset-password', authController.resetPassword);
 
+// -------------------- RUTA ESPECIAL: Inicializar administrador (solo para producción inicial) --------------------
+// Esta ruta permite crear el primer usuario administrador en producción
+// Requiere la variable de entorno INIT_ADMIN_SECRET
+router.post('/api/init-admin', authController.initAdmin);
+router.get('/api/init-admin', authController.initAdmin); // También por GET para facilitar el uso
+
 export default router;
 

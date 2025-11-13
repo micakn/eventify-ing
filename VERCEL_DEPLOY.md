@@ -67,6 +67,9 @@ Los siguientes archivos ya están configurados en el proyecto:
    JWT_EXPIRES_IN=24h
    SESSION_SECRET=tu-session-secret-cambiar-en-produccion
 
+   # Inicialización de administrador (REQUERIDO para crear el primer usuario)
+   INIT_ADMIN_SECRET=tu-clave-secreta-para-inicializar-admin
+
    # Servidor
    NODE_ENV=production
    PORT=3000
@@ -83,6 +86,7 @@ Los siguientes archivos ya están configurados en el proyecto:
 
    - `MONGODB_URI` es **OBLIGATORIA** - sin ella la aplicación no funcionará
    - `JWT_SECRET` y `SESSION_SECRET` deben ser cadenas aleatorias seguras (mínimo 32 caracteres)
+   - `INIT_ADMIN_SECRET` es necesaria para crear el primer usuario administrador (ver sección "Crear Usuario Administrador Inicial")
    - Puedes generar secretos seguros con: `openssl rand -base64 32`
 
    **⚠️ IMPORTANTE**: Reemplaza los valores con tus credenciales reales.
@@ -91,6 +95,39 @@ Los siguientes archivos ya están configurados en el proyecto:
    - Haz clic en "Deploy"
    - Espera a que Vercel construya y despliegue tu aplicación
    - Una vez completado, recibirás una URL (ej: `https://tu-proyecto.vercel.app`)
+
+6. **Crear Usuario Administrador Inicial**
+   
+   Después del despliegue, necesitas crear el primer usuario administrador. Tienes dos opciones:
+
+   **Opción A: Usando el endpoint de inicialización (Recomendado)**
+   
+   1. Asegúrate de tener configurada la variable `INIT_ADMIN_SECRET` en Vercel
+   2. Visita la siguiente URL en tu navegador (reemplaza `TU_URL` y `TU_SECRET`):
+   
+      ```
+      https://TU_URL.vercel.app/auth/api/init-admin?secret=TU_SECRET
+      ```
+   
+   3. O usa curl/Postman:
+   
+      ```bash
+      curl -X POST https://TU_URL.vercel.app/auth/api/init-admin \
+        -H "Content-Type: application/json" \
+        -d '{"secret": "TU_SECRET"}'
+      ```
+   
+   4. Si todo sale bien, recibirás las credenciales:
+      - **Email:** `admin@eventify.com`
+      - **Contraseña:** `admin123`
+   
+   5. **IMPORTANTE:** Cambia la contraseña después del primer login
+   
+   **Opción B: Ejecutar el script localmente apuntando a producción**
+   
+   1. Configura tu `.env` local con la `MONGODB_URI` de producción
+   2. Ejecuta: `node scripts/createAdmin.js`
+   3. Esto creará el usuario administrador en la base de datos de producción
 
 ### Opción 2: Despliegue desde la Línea de Comandos
 
@@ -133,12 +170,13 @@ Los siguientes archivos ya están configurados en el proyecto:
 
 ### Variables Requeridas
 
-| Variable         | Descripción                     | Ejemplo                                                |
-| ---------------- | ------------------------------- | ------------------------------------------------------ |
-| `MONGODB_URI`    | URI de conexión a MongoDB Atlas | `mongodb+srv://user:pass@cluster.mongodb.net/eventify` |
-| `JWT_SECRET`     | Clave secreta para JWT          | `tu-secret-key-muy-segura`                             |
-| `SESSION_SECRET` | Clave secreta para sesiones     | `tu-session-secret`                                    |
-| `NODE_ENV`       | Entorno de ejecución            | `production`                                           |
+| Variable            | Descripción                                          | Ejemplo                                                |
+| ------------------- | ---------------------------------------------------- | ------------------------------------------------------ |
+| `MONGODB_URI`       | URI de conexión a MongoDB Atlas                      | `mongodb+srv://user:pass@cluster.mongodb.net/eventify` |
+| `JWT_SECRET`        | Clave secreta para JWT                               | `tu-secret-key-muy-segura`                             |
+| `SESSION_SECRET`    | Clave secreta para sesiones                          | `tu-session-secret`                                    |
+| `INIT_ADMIN_SECRET` | Clave secreta para crear el primer usuario admin     | `tu-clave-secreta-para-inicializar`                    |
+| `NODE_ENV`          | Entorno de ejecución                                 | `production`                                           |
 
 ### Variables Opcionales
 
