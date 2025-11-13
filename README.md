@@ -37,21 +37,8 @@
    # Para MongoDB local: mongodb://localhost:27017/eventify
    MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/eventify
 
-   # Autenticación
-   # JWT_SECRET: Se usa para firmar tokens JWT (autenticación de API)
-   # SESSION_SECRET: Se usa para firmar cookies de sesión (autenticación web)
-   # IMPORTANTE: Genera valores seguros y únicos para producción
-   JWT_SECRET=tu-secret-key-muy-segura-cambiar-en-produccion
-   JWT_EXPIRES_IN=24h
-   SESSION_SECRET=tu-session-secret-cambiar-en-produccion
-   ```
-
-   **Explicación de las variables:**
-   - **JWT_SECRET**: Clave secreta para firmar y verificar tokens JWT (usados en la API REST). Si alguien conoce esta clave, puede crear tokens falsos.
-   - **SESSION_SECRET**: Clave secreta para firmar las cookies de sesión (usadas en el login web). Si alguien conoce esta clave, puede falsificar sesiones.
-   - **JWT_EXPIRES_IN**: Tiempo de validez de los tokens JWT (por defecto 24 horas).
-
    **Nota:**
+
    - Reemplaza `usuario`, `password` y `cluster.mongodb.net` con tus credenciales de MongoDB Atlas
    - O usa `mongodb://localhost:27017/eventify` si tienes MongoDB instalado localmente
    - **Para producción:** Genera valores seguros y aleatorios para `JWT_SECRET` y `SESSION_SECRET` usando: `openssl rand -base64 32`
