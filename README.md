@@ -5,19 +5,22 @@
 ### Instalación y Configuración
 
 1. **Clonar el repositorio**
+
    ```bash
    git clone <url-del-repositorio>
    cd eventify-ing
    ```
 
 2. **Instalar dependencias**
+
    ```bash
    npm install
    ```
 
 3. **Configurar variables de entorno**
-   
+
    Crea un archivo `.env` en la raíz del proyecto con:
+
    ```env
    # Servidor
    PORT=3000
@@ -33,41 +36,49 @@
    ```
 
 4. **Crear usuario administrador**
+
    ```bash
    node scripts/createAdmin.js
    ```
-   
+
    Esto creará un usuario con:
+
    - **Email:** `admin@eventify.com`
    - **Contraseña:** `admin123`
 
 5. **Opcional: Cargar datos de prueba**
+
    ```bash
    npm run seed
    ```
-   
+
    Esto creará datos de ejemplo (clientes, empleados, eventos, etc.)
+
    - Todos los usuarios tienen la contraseña: `password123`
    - Emails de ejemplo: `alex.lopez@eventify.com`, `maria.garcia@eventify.com`, etc.
 
 6. **Iniciar el servidor**
+
    ```bash
    npm start
    ```
-   
+
    O en modo desarrollo (con auto-restart):
+
    ```bash
    npm run dev
    ```
 
 7. **Acceder al sistema**
-   
+
    Abre tu navegador y ve a:
+
    ```
    http://localhost:3000/login
    ```
-   
+
    **Credenciales:**
+
    - **Email:** `admin@eventify.com`
    - **Contraseña:** `admin123`
 
@@ -384,6 +395,7 @@ Dentro del equipo contamos con:
 **Objetivo**: Comprender en profundidad las necesidades de Eventify y definir los requerimientos del sistema.
 
 **Actividades**:
+
 - Relevamiento de procesos actuales.
 - Entrevistas con usuarios clave.
 - Análisis de requerimientos funcionales y no funcionales.
@@ -394,6 +406,7 @@ Dentro del equipo contamos con:
 - **Desarrollo del módulo de autenticación básico** (para mostrar progreso temprano).
 
 **Entregables**:
+
 - Documento de requerimientos.
 - Prototipos de interfaz de usuario.
 - Arquitectura del sistema.
@@ -410,6 +423,7 @@ Dentro del equipo contamos con:
 **Objetivo**: Desarrollar la base del sistema y los módulos críticos (Cotizaciones e Invitados).
 
 **Actividades**:
+
 - Desarrollo del módulo de autenticación y autorización completo (roles y permisos).
 - Desarrollo del módulo de cotizaciones y proveedores (RF1).
 - Desarrollo del módulo de invitados y acreditación (RF2) - versión MVP.
@@ -419,6 +433,7 @@ Dentro del equipo contamos con:
 - **Configuración de monitoreo básico**.
 
 **Entregables**:
+
 - Sistema base funcional con autenticación completa.
 - Módulo de cotizaciones operativo (MVP).
 - Módulo de invitados operativo (MVP - funcionalidades básicas).
@@ -435,6 +450,7 @@ Dentro del equipo contamos con:
 **Objetivo**: Completar los módulos restantes (Cronograma y Facturación) y mejorar los módulos base.
 
 **Actividades**:
+
 - Desarrollo del módulo de cronograma y responsables (RF3).
 - Desarrollo del módulo de facturación y cierre contable (RF4) - versión MVP.
 - Desarrollo del módulo de auditoría (RNF4).
@@ -445,6 +461,7 @@ Dentro del equipo contamos con:
 - **Implementación completa de seguridad** (backups, monitoreo, alertas).
 
 **Entregables**:
+
 - Todos los módulos funcionales (versión MVP completa).
 - Sistema integrado completo.
 - Interfaz de usuario completa.
@@ -461,6 +478,7 @@ Dentro del equipo contamos con:
 **Objetivo**: Validar que el sistema cumple con todos los requerimientos y está listo para producción.
 
 **Actividades**:
+
 - Pruebas de aceptación de usuario (UAT).
 - Pruebas de carga y rendimiento.
 - Pruebas de seguridad.
@@ -469,6 +487,7 @@ Dentro del equipo contamos con:
 - Documentación de usuario.
 
 **Entregables**:
+
 - Sistema probado y validado.
 - Documentación de usuario.
 - Manual de administración.
@@ -481,6 +500,7 @@ Dentro del equipo contamos con:
 **Objetivo**: Capacitar al personal de Eventify y asegurar una transición suave a producción.
 
 **Actividades**:
+
 - Capacitación del personal de Eventify.
 - Migración de datos históricos (si aplica).
 - Puesta en producción del sistema.
@@ -488,6 +508,7 @@ Dentro del equipo contamos con:
 - Monitoreo y ajustes.
 
 **Entregables**:
+
 - Personal capacitado.
 - Sistema en producción.
 - Documentación de soporte.
@@ -652,6 +673,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### 1. Administrador
 
 **Permisos**:
+
 - Acceso total al sistema.
 - Gestión de usuarios y roles.
 - Configuración del sistema.
@@ -659,6 +681,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Visualización de reportes y auditoría.
 
 **Funciones**:
+
 - Crear, editar y eliminar usuarios.
 - Asignar roles a usuarios.
 - Configurar parámetros del sistema.
@@ -668,12 +691,14 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### 2. Productor
 
 **Permisos**:
+
 - Gestión de eventos y cronogramas.
 - Gestión de cotizaciones.
 - Gestión de invitados.
 - Visualización de reportes de eventos.
 
 **Funciones**:
+
 - Crear y gestionar eventos.
 - Crear y gestionar cotizaciones.
 - Gestionar invitados e invitaciones.
@@ -683,12 +708,14 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### 3. Financiero
 
 **Permisos**:
+
 - Gestión de facturación y gastos.
 - Gestión de proveedores.
 - Visualización de reportes financieros.
 - Acceso a auditoría financiera.
 
 **Funciones**:
+
 - Registrar gastos.
 - Generar facturas.
 - Gestionar proveedores.
@@ -698,11 +725,13 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### 4. Diseñador
 
 **Permisos**:
+
 - Gestión de tareas y hitos.
 - Visualización de cronogramas.
 - Actualización de estados de tareas.
 
 **Funciones**:
+
 - Ver tareas asignadas.
 - Actualizar estado de tareas.
 - Visualizar cronogramas.
@@ -725,6 +754,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RF1: Registro y Seguimiento de Cotizaciones ✅
 
 **Requerimiento**:
+
 - Crear, guardar y actualizar cotizaciones enviadas a clientes.
 - Incluir datos de proveedores, precios, margen de ganancia.
 - Número único de cotización y estado (pendiente/aprobada/rechazada).
@@ -733,6 +763,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Generación de PDF con formato institucional.
 
 **Cumplimiento**:
+
 - ✅ Modelo `Proveedor` con información completa.
 - ✅ Modelo `Cotizacion` con número único y estados.
 - ✅ Modelo `ItemCotizacion` para items de cotización.
@@ -744,6 +775,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RF2: Gestión Automatizada de Invitados y Acreditación ✅
 
 **Requerimiento**:
+
 - Importación de listas de invitados (Excel/CSV).
 - Envío masivo de invitaciones por email.
 - RSVP (confirmación/rechazo) con enlaces únicos.
@@ -752,6 +784,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Acreditación digital en el evento (check-in).
 
 **Cumplimiento**:
+
 - ✅ Modelo `Invitado` con información completa.
 - ✅ Modelo `Invitacion` con estado RSVP.
 - ✅ Importación desde Excel/CSV.
@@ -763,12 +796,14 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RF3: Crear y Editar Eventos con Cronograma y Responsables ✅
 
 **Requerimiento**:
+
 - Eventos con cronograma detallado (hitos y tareas).
 - Asignación de responsables internos.
 - Vista general de todos los eventos.
 - Seguimiento del ciclo de vida del evento.
 
 **Cumplimiento**:
+
 - ✅ Modelo `Evento` con estado y responsables.
 - ✅ Modelo `Hito` para hitos del cronograma.
 - ✅ Asignación de múltiples responsables.
@@ -779,6 +814,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RF4: Automatización del Cierre Contable y Facturación ✅
 
 **Requerimiento**:
+
 - Registro de gastos reales por evento.
 - Conciliación automática presupuesto vs gastos.
 - Alertas de desvío de presupuesto.
@@ -788,6 +824,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Flujo de aprobación (borrador → aprobada → enviada).
 
 **Cumplimiento**:
+
 - ✅ Modelo `Gasto` para registro de gastos.
 - ✅ Modelo `FacturaCliente` para facturas.
 - ✅ Conciliación automática presupuesto vs gastos.
@@ -802,6 +839,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RNF1: Seguridad y Control de Acceso Basado en Roles ✅
 
 **Requerimiento**:
+
 - Autenticación de usuarios (login/logout).
 - Roles diferenciados (Administrador, Productor, Financiero, Diseñador).
 - Permisos por rol (ej: Productor solo ve sus eventos).
@@ -811,6 +849,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Registro de accesos en auditoría.
 
 **Cumplimiento**:
+
 - ✅ Sistema de autenticación dual (JWT + Passport.js).
 - ✅ Modelo `Usuario` con roles y permisos.
 - ✅ Hash de contraseñas con bcrypt.
@@ -827,6 +866,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RNF2: Rendimiento y Disponibilidad del Sistema ⚠️
 
 **Requerimiento**:
+
 - Tiempo de respuesta ≤ 3 segundos para operaciones críticas.
 - Disponibilidad del 99.5% mensual.
 - Soporte para 20 usuarios concurrentes.
@@ -834,6 +874,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Escalabilidad para incremento del 50% anual.
 
 **Cumplimiento**:
+
 - ⚠️ Sistema de monitoreo (pendiente).
 - ⚠️ Métricas de rendimiento (pendiente).
 - ⚠️ Pruebas de carga (pendiente).
@@ -843,10 +884,12 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RNF3: Tiempo de Respuesta Óptimo ⚠️
 
 **Requerimiento**:
+
 - Respuesta < 2 segundos en 95% de operaciones.
 - Soporte para 20 eventos activos simultáneos.
 
 **Cumplimiento**:
+
 - ⚠️ Optimización de consultas (pendiente).
 - ⚠️ Caché de consultas frecuentes (pendiente).
 - ✅ Consultas optimizadas con índices de MongoDB.
@@ -855,6 +898,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 #### RNF4: Seguridad y Trazabilidad ✅
 
 **Requerimiento**:
+
 - Registro inmutable de todas las acciones del sistema.
 - Trazabilidad completa de operaciones financieras.
 - Prevención de modificaciones en facturas/gastos cerrados.
@@ -862,6 +906,7 @@ Cada usuario del ERP Eventify tendrá su propio **nombre de usuario y contraseñ
 - Filtrado y búsqueda de registros.
 
 **Cumplimiento**:
+
 - ✅ Modelo `Auditoria` con registros inmutables.
 - ✅ Middleware de auditoría automática.
 - ✅ Registro de operaciones financieras críticas.
@@ -941,6 +986,7 @@ El costo del proyecto se estima en función de las **horas de desarrollo** y los
 **Costo total**: $15,287
 
 **Desglose**:
+
 - Desarrollo: $12,550 (82%)
 - Infraestructura: $627 (4%)
 - Herramientas: $210 (1%)
@@ -1112,7 +1158,6 @@ Agradecemos su atención y dejamos abierto este espacio para preguntas y comenta
 ---
 
 ## 📚 Referencias
-
 
 - **Repositorio**: [eventify-ing](https://github.com/micakn/eventify-ing)
 - **Documentación Técnica**: Ver carpeta `docs/` para documentación detallada
