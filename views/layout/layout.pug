@@ -20,14 +20,15 @@ html(lang="es")
             .text-center.mb-4
               h4 
                 i.bi.bi-calendar-event.text-primary.me-2
-                | Eventify
+               | Eventify
               if user
-                .mt-3
-                  small.text-muted
-                    | #{(user && user.empleado && user.empleado.nombre) || (user && user.email) || '' }
-                    br
-                    span.badge.bg-secondary= user.rol
+                  .mt-3
+              small.text-muted
+               | #{(user.empleado && user.empleado.nombre) || user.email || ''}
+                br
+             span.badge.bg-secondary= user.rol
               hr
+
             
             ul.nav.flex-column
               li.nav-item
