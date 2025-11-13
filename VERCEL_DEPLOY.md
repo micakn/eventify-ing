@@ -59,10 +59,10 @@ Los siguientes archivos ya están configurados en el proyecto:
    - Agrega las siguientes variables:
 
    ```env
-   # Base de datos
+   # Base de datos (REQUERIDO)
    MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/eventify
 
-   # Autenticación
+   # Autenticación (REQUERIDO)
    JWT_SECRET=tu-secret-key-muy-segura-cambiar-en-produccion
    JWT_EXPIRES_IN=24h
    SESSION_SECRET=tu-session-secret-cambiar-en-produccion
@@ -78,6 +78,12 @@ Los siguientes archivos ya están configurados en el proyecto:
    EMAIL_PASS=tu-password-de-aplicacion
    EMAIL_FROM=noreply@eventify.com
    ```
+
+   **⚠️ IMPORTANTE**:
+
+   - `MONGODB_URI` es **OBLIGATORIA** - sin ella la aplicación no funcionará
+   - `JWT_SECRET` y `SESSION_SECRET` deben ser cadenas aleatorias seguras (mínimo 32 caracteres)
+   - Puedes generar secretos seguros con: `openssl rand -base64 32`
 
    **⚠️ IMPORTANTE**: Reemplaza los valores con tus credenciales reales.
 
@@ -198,10 +204,30 @@ Vercel se conecta automáticamente a tu repositorio Git y despliega automáticam
 
 **Solución**:
 
-1. Revisa los logs de Vercel en el dashboard
-2. Verifica que todas las variables de entorno estén configuradas
+1. Revisa los logs de Vercel en el dashboard (Deployments → Functions → Logs)
+2. Verifica que todas las variables de entorno estén configuradas (especialmente `MONGODB_URI`)
 3. Asegúrate de que `vercel.json` esté correctamente configurado
 4. Verifica que `api/index.js` esté en la ubicación correcta
+5. Verifica que MongoDB Atlas permita conexiones desde cualquier IP (0.0.0.0/0) o agrega las IPs de Vercel
+6. Asegúrate de que el usuario de MongoDB tenga los permisos correctos
+
+### Error: "Cannot find module" o errores de importación
+
+**Solución**:
+
+1. Verifica que `package.json` tenga `"type": "module"` para usar ES modules
+2. Asegúrate de que todas las importaciones usen la extensión `.js`
+3. Verifica que no haya imports circulares
+4. Revisa los logs de build en Vercel para ver qué módulo falta
+
+### Error: "Function execution timeout"
+
+**Solución**:
+
+1. El `vercel.json` ya está configurado con `maxDuration: 30` segundos
+2. Si necesitas más tiempo, actualiza el plan de Vercel (el plan gratuito tiene límites)
+3. Optimiza las consultas a MongoDB para que sean más rápidas
+4. Considera usar índices en MongoDB para mejorar el rendimiento
 
 ## 📊 Monitoreo y Logs
 

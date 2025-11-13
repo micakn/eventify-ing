@@ -4,6 +4,7 @@ import ClienteModel from '../models/ClienteModel.js';
 import EventoModel from '../models/EventoModel.js';
 import ProveedorModel from '../models/ProveedorModel.js';
 import ItemCotizacionModel from '../models/ItemCotizacionModel.js';
+import UsuarioModel from '../models/UsuarioModel.js';
 
 const listCotizacionesWeb = async (req, res) => {
   try {
@@ -100,11 +101,46 @@ const createCotizacionWeb = async (req, res) => {
         req.body.items = [];
       }
     }
-    await CotizacionModel.add(req.body);
+    
+    // Agregar creadoPor desde el usuario autenticado
+    if (req.user && req.user.id) {
+      req.body.creadoPor = req.user.id;
+    } else if (req.user && req.user._id) {
+      req.body.creadoPor = req.user._id;
+    } else {
+      // Si no hay usuario autenticado, buscar un usuario administrador por defecto
+      const usuarioAdmin = await UsuarioModel.getByEmail('admin@eventify.com');
+      if (usuarioAdmin) {
+        req.body.creadoPor = usuarioAdmin.id || usuarioAdmin._id;
+      } else {
+        // Si no existe, usar el primer usuario disponible
+        const usuarios = await UsuarioModel.getAll();
+        if (usuarios && usuarios.length > 0) {
+          req.body.creadoPor = usuarios[0].id || usuarios[0]._id;
+        } else {
+          return res.status(400).render('error', { 
+            title: 'Error', 
+            message: 'No hay usuarios en el sistema. Debe crear un usuario primero.' 
+          });
+        }
+      }
+    }
+    
+    // El número se genera automáticamente si no se proporciona
+    const cotizacion = await CotizacionModel.add(req.body);
+    if (!cotizacion) {
+      return res.status(500).render('error', { 
+        title: 'Error', 
+        message: 'Error al crear la cotización. Verifique los datos ingresados.' 
+      });
+    }
     res.redirect('/cotizaciones');
   } catch (error) {
-    console.error(error);
-    res.status(500).render('error', { title: 'Error', message: 'Error al crear la cotización' });
+    console.error('Error al crear cotización:', error);
+    res.status(500).render('error', { 
+      title: 'Error', 
+      message: 'Error al crear la cotización: ' + (error.message || 'Error desconocido') 
+    });
   }
 };
 

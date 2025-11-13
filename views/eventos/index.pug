@@ -69,35 +69,13 @@ block content
                         i.bi.bi-eye
                       a.btn.btn-sm.btn-outline-secondary(href=`/eventos/editar/${evento.id}`)
                         i.bi.bi-pencil
-                      button.btn.btn-sm.btn-outline-danger(
-                        type="button",
-                        onclick=`confirmDelete('${evento.id}')`
-                      )
-                        i.bi.bi-trash
+                      form.d-inline(method="POST", action=`/eventos/${evento.id}?_method=DELETE`)
+                        button.btn.btn-sm.btn-outline-danger(type="submit", onclick="return confirm('¿Estás seguro de eliminar este evento?')")
+                          i.bi.bi-trash
       else
         .text-center.py-5
           i.bi.bi-calendar-event.fs-1.text-muted
           p.mt-3 No hay eventos registrados
           a.btn.btn-primary(href="/eventos/nuevo") Agregar primer evento
 
-block scripts
-  script.
-    function confirmDelete(id) {
-      if (confirm('¿Estás seguro de eliminar este evento?')) {
-        fetch(`/eventos/${id}?_method=DELETE`, { method: 'POST' })
-          .then(response => {
-            if (response.redirected) {
-              window.location.href = response.url;
-            } else {
-              return response.json();
-            }
-          })
-          .then(data => {
-            if (data?.mensaje) {
-              setTimeout(() => location.reload(), 1200);
-            }
-          })
-          .catch(error => console.error('Error:', error));
-      }
-    }
 

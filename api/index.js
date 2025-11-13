@@ -5,6 +5,7 @@ import { connectMongo } from '../db/mongoose.js';
 // Importar la app de forma lazy para capturar errores de inicialización
 let app = null;
 let appError = null;
+let isConnecting = false;
 
 async function getApp() {
   // Si ya intentamos cargar la app y falló, lanzar el error
@@ -17,12 +18,22 @@ async function getApp() {
     return app;
   }
   
+  // Si ya estamos conectando, esperar
+  if (isConnecting) {
+    // Esperar un poco y reintentar
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return getApp();
+  }
+  
   // Intentar cargar la app
   try {
+    isConnecting = true;
     const appModule = await import('../app.js');
     app = appModule.default;
+    isConnecting = false;
     return app;
   } catch (error) {
+    isConnecting = false;
     appError = error;
     console.error('❌ Error al importar app.js:');
     console.error('Mensaje:', error.message);
@@ -54,10 +65,10 @@ export default async function handler(req, res) {
       console.warn('⚠️  MONGODB_URI no está configurada');
     }
     
-    // Devolver la app de Express como handler
-    // Express manejará la respuesta automáticamente
-    // Nota: Express no retorna una promesa, pero maneja las respuestas directamente
-    return expressApp(req, res);
+    // Ejecutar Express directamente
+    // Express maneja las requests y respuestas automáticamente
+    // En Vercel, simplemente pasamos req y res a Express
+    expressApp(req, res);
   } catch (error) {
     // Manejar errores de inicialización
     // Siempre loguear el error completo para debugging en Vercel

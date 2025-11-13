@@ -22,11 +22,13 @@ block content
                 .col-md-6
                   .mb-3
                     label.form-label(for="fechaInicio") Fecha Inicio *
-                    input.form-control#fechaInicio(type="datetime-local", name="fechaInicio", value=evento ? new Date(evento.fechaInicio).toISOString().slice(0, 16) : '', required)
+                    - const fechaInicioValue = evento && evento.fechaInicio ? new Date(evento.fechaInicio).toISOString().slice(0, 16) : ''
+                    input.form-control#fechaInicio(type="datetime-local", name="fechaInicio", value=fechaInicioValue, required)
                 .col-md-6
                   .mb-3
                     label.form-label(for="fechaFin") Fecha Fin *
-                    input.form-control#fechaFin(type="datetime-local", name="fechaFin", value=evento ? new Date(evento.fechaFin).toISOString().slice(0, 16) : '', required)
+                    - const fechaFinValue = evento && evento.fechaFin ? new Date(evento.fechaFin).toISOString().slice(0, 16) : ''
+                    input.form-control#fechaFin(type="datetime-local", name="fechaFin", value=fechaFinValue, required)
               
               .mb-3
                 label.form-label(for="lugar") Lugar
@@ -41,7 +43,8 @@ block content
                 select.form-select#cliente(name="cliente")
                   option(value="") Sin cliente
                   each cliente in clientes || []
-                    option(value=cliente.id, selected=(evento && evento.cliente && (evento.cliente.id || evento.cliente) === cliente.id))= cliente.nombre
+                    - const clienteId = evento && (evento.clienteId ? (evento.clienteId.id || evento.clienteId) : (evento.cliente ? (evento.cliente.id || evento.cliente) : null))
+                    option(value=cliente.id, selected=(clienteId === cliente.id))= cliente.nombre
               
               .mb-3
                 label.form-label(for="estado") Estado

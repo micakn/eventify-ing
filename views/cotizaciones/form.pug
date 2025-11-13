@@ -1,0 +1,79 @@
+//- views/cotizaciones/form.pug
+extends ../layout/layout
+
+block content
+  .container.mt-4
+    .row.justify-content-center
+      .col-md-10
+        .card
+          .card-header
+            h3= formTitle || 'Formulario de Cotización'
+          .card-body
+            form(method="POST", action=formAction)
+              .mb-3
+                label.form-label(for="numero") Número de Cotización
+                input.form-control#numero(type="text", name="numero", value=cotizacion ? cotizacion.numero : '', placeholder="COT-2025-001 (se genera automáticamente si se deja vacío)")
+                small.form-text.text-muted Si se deja vacío, se generará automáticamente
+              
+              .row
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="cliente") Cliente *
+                    select.form-select#cliente(name="cliente", required)
+                      option(value="") Seleccionar cliente
+                      each cliente in clientes || []
+                        - const clienteId = cotizacion && (cotizacion.cliente ? (cotizacion.cliente.id || cotizacion.cliente) : cotizacion.cliente)
+                        option(value=cliente.id, selected=(clienteId === cliente.id))= cliente.nombre
+                .col-md-6
+                  .mb-3
+                    label.form-label(for="evento") Evento *
+                    select.form-select#evento(name="evento", required)
+                      option(value="") Seleccionar evento
+                      each evento in eventos || []
+                        - const eventoId = cotizacion && (cotizacion.evento ? (cotizacion.evento.id || cotizacion.evento) : cotizacion.evento)
+                        option(value=evento.id, selected=(eventoId === evento.id))= evento.nombre
+              
+              .mb-3
+                label.form-label(for="margenPorcentaje") Margen de Ganancia (%)
+                input.form-control#margenPorcentaje(type="number", name="margenPorcentaje", step="0.01", min="0", max="100", value=cotizacion ? cotizacion.margenPorcentaje : '20')
+              
+              .mb-3
+                label.form-label(for="estado") Estado
+                select.form-select#estado(name="estado")
+                  option(value="borrador", selected=(cotizacion && cotizacion.estado === 'borrador')) Borrador
+                  option(value="pendiente", selected=(cotizacion && cotizacion.estado === 'pendiente')) Pendiente
+                  option(value="aprobada", selected=(cotizacion && cotizacion.estado === 'aprobada')) Aprobada
+                  option(value="rechazada", selected=(cotizacion && cotizacion.estado === 'rechazada')) Rechazada
+                  option(value="vencida", selected=(cotizacion && cotizacion.estado === 'vencida')) Vencida
+              
+              .mb-3
+                label.form-label(for="observaciones") Observaciones
+                textarea.form-control#observaciones(name="observaciones", rows="3")= cotizacion ? cotizacion.observaciones : ''
+              
+              if cotizacion && items && items.length > 0
+                .mb-3
+                  label.form-label Items de la Cotización
+                  .table-responsive
+                    table.table.table-sm
+                      thead
+                        tr
+                          th Descripción
+                          th Cantidad
+                          th Precio Unitario
+                          th Subtotal
+                      tbody
+                        each item in items
+                          tr
+                            td= item.descripcion || '-'
+                            td= item.cantidad || 0
+                            td= item.precioUnitario ? `$${item.precioUnitario.toLocaleString()}` : '-'
+                            td= item.subtotal ? `$${item.subtotal.toLocaleString()}` : '-'
+              
+              .d-flex.gap-2
+                button.btn.btn-primary(type="submit")
+                  i.bi.bi-check-circle.me-2
+                  = cotizacion ? 'Actualizar' : 'Crear'
+                a.btn.btn-secondary(href="/cotizaciones")
+                  i.bi.bi-arrow-left.me-2
+                  | Cancelar
+

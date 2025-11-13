@@ -22,6 +22,9 @@ import { errorHandler } from './middleware/errorHandler.js';
 // Rutas de autenticación
 import authRoutes from './routes/authRoutes.js';
 
+// Middleware de autenticación
+import { requireAuth, requireRoleWeb } from './middleware/auth.js';
+
 // Modelos (usarán Mongoose internamente)
 import ClienteModel from './models/ClienteModel.js';
 import EmpleadoModel from './models/EmpleadoModel.js';
@@ -174,8 +177,8 @@ app.get('/health', (req, res) => {
   res.status(200).json(health);
 });
 
-// Ruta principal
-app.get('/', async (req, res) => {
+// Ruta principal - Protegida con autenticación
+app.get('/', requireAuth, async (req, res) => {
   try {
     const [tareas, empleados, clientes, eventos] = await Promise.all([
       TareaModel.getAll(),
@@ -186,20 +189,25 @@ app.get('/', async (req, res) => {
 
     const ahora = new Date();
 
+    // Calcular eventos por estado
     const eventosPorEstado = eventos.reduce((acum, evento) => {
       const estado = evento.estado || 'planificacion';
       acum[estado] = (acum[estado] || 0) + 1;
       return acum;
     }, {});
 
+    // Estado de eventos para badges
     const estadoEventoColor = {
       planificacion: 'bg-primary',
       en_curso: 'bg-info',
+      activo: 'bg-info',
       ejecutado: 'bg-success',
       cerrado: 'bg-secondary',
-      cancelado: 'bg-danger'
+      cancelado: 'bg-danger',
+      pendiente: 'bg-warning'
     };
 
+    // Eventos próximos (futuros, ordenados por fecha)
     const eventosProximos = eventos
       .filter(evento => evento.fechaInicio && new Date(evento.fechaInicio) >= ahora)
       .sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio))
@@ -209,7 +217,7 @@ app.get('/', async (req, res) => {
         return {
           id: evento.id,
           nombre: evento.nombre,
-          clienteNombre: evento.cliente && evento.cliente.nombre ? evento.cliente.nombre : '-',
+          clienteNombre: evento.clienteId && evento.clienteId.nombre ? evento.clienteId.nombre : (evento.cliente && evento.cliente.nombre ? evento.cliente.nombre : '-'),
           estado: evento.estado || 'planificacion',
           badgeClass: estadoEventoColor[evento.estado || 'planificacion'] || 'bg-secondary',
           fechaInicio: fecha,
@@ -222,12 +230,21 @@ app.get('/', async (req, res) => {
         };
       });
 
+    // Tareas por estado
     const tareasPorEstado = {
       pendiente: tareas.filter(t => t.estado === 'pendiente').length,
       enProceso: tareas.filter(t => t.estado === 'en proceso').length,
       finalizada: tareas.filter(t => t.estado === 'finalizada').length
     };
 
+    const totalTareas = tareasPorEstado.pendiente + tareasPorEstado.enProceso + tareasPorEstado.finalizada;
+    const tareasPorEstadoPercent = totalTareas > 0 ? {
+      pendiente: Math.round((tareasPorEstado.pendiente / totalTareas) * 100),
+      enProceso: Math.round((tareasPorEstado.enProceso / totalTareas) * 100),
+      finalizada: Math.round((tareasPorEstado.finalizada / totalTareas) * 100)
+    } : { pendiente: 0, enProceso: 0, finalizada: 0 };
+
+    // Tareas recientes (ordenadas por fecha de actualización)
     const tareasRecientes = [...tareas]
       .sort((a, b) => {
         const fechaA = a.updatedAt || a.createdAt || ahora;
@@ -247,13 +264,36 @@ app.get('/', async (req, res) => {
           titulo: tarea.titulo,
           estado: tarea.estado || 'pendiente',
           fechaLabel: fecha ? new Date(fecha).toLocaleString('es-AR') : 'Sin fecha',
-          badgeClass: estadoBadge
+          badgeClass: estadoBadge,
+          area: tarea.area || '-'
         };
       });
 
+    // Distribución de eventos
+    const estadosEvento = [
+      { clave: 'planificacion', label: 'Planificación', color: 'primary' },
+      { clave: 'en_curso', label: 'En curso', color: 'info' },
+      { clave: 'activo', label: 'Activo', color: 'info' },
+      { clave: 'ejecutado', label: 'Ejecutado', color: 'success' },
+      { clave: 'cerrado', label: 'Cerrado', color: 'secondary' },
+      { clave: 'cancelado', label: 'Cancelado', color: 'danger' },
+      { clave: 'pendiente', label: 'Pendiente', color: 'warning' }
+    ];
+
+    const totalEstados = estadosEvento.reduce((acc, estado) => acc + (eventosPorEstado[estado.clave] || 0), 0);
+    const distribucionEventos = estadosEvento
+      .map(estado => ({
+        ...estado,
+        cantidad: eventosPorEstado[estado.clave] || 0,
+        porcentaje: totalEstados > 0 ? Math.round(((eventosPorEstado[estado.clave] || 0) / totalEstados) * 100) : 0,
+        badgeClass: `bg-${estado.color}`
+      }))
+      .filter(estado => estado.cantidad > 0);
+
+    // Métricas resumidas
     const resumen = {
       totalEventos: eventos.length,
-      eventosActivos: (eventosPorEstado.en_curso || 0) + (eventosPorEstado.planificacion || 0),
+      eventosActivos: (eventosPorEstado.en_curso || 0) + (eventosPorEstado.activo || 0) + (eventosPorEstado.planificacion || 0),
       eventosCerrados: (eventosPorEstado.cerrado || 0) + (eventosPorEstado.ejecutado || 0),
       totalClientes: clientes.length,
       totalEmpleados: empleados.length,
@@ -262,6 +302,7 @@ app.get('/', async (req, res) => {
       tareasFinalizadas: tareasPorEstado.finalizada
     };
 
+    // Tarjetas de métricas para el dashboard
     const metricCards = [
       { label: 'Eventos totales', value: resumen.totalEventos, icon: 'calendar-event', color: 'primary', subtitle: 'Registrados en el sistema' },
       { label: 'Eventos activos', value: resumen.eventosActivos, icon: 'play-circle', color: 'success', subtitle: 'En planificación o ejecución' },
@@ -269,31 +310,9 @@ app.get('/', async (req, res) => {
       { label: 'Empleados', value: resumen.totalEmpleados, icon: 'person-badge', color: 'warning', subtitle: 'Usuarios internos' }
     ];
 
-    const totalTareas = tareasPorEstado.pendiente + tareasPorEstado.enProceso + tareasPorEstado.finalizada;
-    const tareasPorEstadoPercent = totalTareas > 0 ? {
-      pendiente: Math.round((tareasPorEstado.pendiente / totalTareas) * 100),
-      enProceso: Math.round((tareasPorEstado.enProceso / totalTareas) * 100),
-      finalizada: Math.round((tareasPorEstado.finalizada / totalTareas) * 100)
-    } : { pendiente: 0, enProceso: 0, finalizada: 0 };
-
-    const estadosEvento = [
-      { clave: 'planificacion', label: 'Planificación', color: 'primary' },
-      { clave: 'en_curso', label: 'En curso', color: 'info' },
-      { clave: 'ejecutado', label: 'Ejecutado', color: 'success' },
-      { clave: 'cerrado', label: 'Cerrado', color: 'secondary' },
-      { clave: 'cancelado', label: 'Cancelado', color: 'danger' }
-    ];
-
-    const totalEstados = estadosEvento.reduce((acc, estado) => acc + (eventosPorEstado[estado.clave] || 0), 0);
-    const distribucionEventos = estadosEvento.map(estado => ({
-      ...estado,
-      cantidad: eventosPorEstado[estado.clave] || 0,
-      porcentaje: totalEstados > 0 ? Math.round(((eventosPorEstado[estado.clave] || 0) / totalEstados) * 100) : 0,
-      badgeClass: `bg-${estado.color}`
-    }));
-
+    // Accesos rápidos
     const accesosRapidos = [
-      { label: 'Nuevo evento', icon: 'calendar-plus', route: '/eventos/nuevo', color: 'primary' },
+      { label: 'Nuevo evento', icon: 'calendar-plus', route: '/eventos/crear', color: 'primary' },
       { label: 'Nuevo cliente', icon: 'person-plus', route: '/clientes/nuevo', color: 'success' },
       { label: 'Nueva tarea', icon: 'list-check', route: '/tareas/nuevo', color: 'info' },
       { label: 'Nueva cotización', icon: 'file-earmark-text', route: '/cotizaciones/nuevo', color: 'warning' }
@@ -301,6 +320,10 @@ app.get('/', async (req, res) => {
 
     res.render('index', {
       title: 'Dashboard - Eventify',
+      tareas,
+      empleados,
+      clientes,
+      eventos,
       resumen,
       eventosProximos,
       tareasRecientes,
@@ -327,13 +350,12 @@ app.get('/login', (req, res) => {
   res.render('auth/login', { title: 'Login - Eventify' });
 });
 
-// -------------------- Routers --------------------
-
-// Autenticación (login/logout)
+// Autenticación (login/logout) - debe estar antes de requireAuth
 app.use('/auth', authRoutes);
 
-// Web (vistas Pug) - Protegidas
-import { requireAuth, requireRoleWeb } from './middleware/auth.js';
+// -------------------- Routers --------------------
+
+// Importar rutas web
 import empleadoWebRoutes from './routes/empleadoWebRoutes.js';
 import eventoWebRoutes from './routes/eventoWebRoutes.js';
 import tareaWebRoutes from './routes/tareaWebRoutes.js';

@@ -1,134 +1,411 @@
-//- views/index.pug
+//- views/index.pug - Dashboard mejorado
 extends layout/layout
+
+block styles
+  style.
+    .dashboard-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      padding: 2.5rem;
+      color: white;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border-top: 4px solid;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .stat-card.primary { border-top-color: #0d6efd; }
+    .stat-card.success { border-top-color: #198754; }
+    .stat-card.info { border-top-color: #0dcaf0; }
+    .stat-card.warning { border-top-color: #ffc107; }
+    .stat-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .stat-icon-wrapper.primary { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: white; }
+    .stat-icon-wrapper.success { background: linear-gradient(135deg, #198754 0%, #146c43 100%); color: white; }
+    .stat-icon-wrapper.info { background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%); color: white; }
+    .stat-icon-wrapper.warning { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; }
+    .stat-number {
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .stat-subtitle {
+      font-size: 0.8rem;
+      color: #adb5bd;
+      margin-top: 0.5rem;
+    }
+    .dashboard-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    .dashboard-card:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .card-header-custom {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 1.5rem;
+      border-bottom: 2px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-header-custom h5 {
+      margin: 0;
+      font-weight: 700;
+      color: #212529;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .card-header-custom i {
+      font-size: 1.5rem;
+      color: #667eea;
+    }
+    .event-item, .task-item {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.2s ease;
+    }
+    .event-item:last-child, .task-item:last-child {
+      border-bottom: none;
+    }
+    .event-item:hover, .task-item:hover {
+      background: #f8f9fa;
+      padding-left: 2rem;
+    }
+    .progress-modern {
+      height: 10px;
+      border-radius: 10px;
+      background: #e9ecef;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar-modern {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.8s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar-modern::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progress-shine 2s infinite;
+    }
+    @keyframes progress-shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .quick-action-btn {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      height: 100%;
+    }
+    .quick-action-btn:hover {
+      border-color: #667eea;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+      color: inherit;
+      text-decoration: none;
+    }
+    .quick-action-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1rem;
+    }
+    .empty-state {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: #6c757d;
+    }
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    .stat-card { animation: fadeInUp 0.6s ease forwards; }
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
 
 block content
   .container-fluid.py-4
-    .row.mb-4
-      .col
-        h1.fw-bold.mb-1 Dashboard general
-        p.text-muted Monitoreá la operación diaria de Eventify de un vistazo.
+    //- Hero Section
+    .dashboard-hero.fade-in-up
+      .row.align-items-center
+        .col-md-8
+          h1.fw-bold.mb-2
+            i.bi.bi-speedometer2.me-3
+            | Dashboard Eventify
+          p.mb-0.opacity-90 Vista general de tu sistema de gestión de eventos
+        .col-md-4.text-md-end
+          .d-flex.gap-2.justify-content-md-end.mt-3.mt-md-0
+            a.btn.btn-light.btn-lg(href="/eventos/nuevo")
+              i.bi.bi-plus-circle.me-2
+              | Nuevo Evento
+            a.btn.btn-outline-light.btn-lg(href="/clientes/nuevo")
+              i.bi.bi-person-plus.me-2
+              | Nuevo Cliente
 
+    //- Estadísticas principales
+    .row.g-4.mb-4
+      .col-md-6.col-lg-3
+        .stat-card.primary.fade-in-up
+          .stat-icon-wrapper.primary
+            i.bi.bi-calendar-event
+          .stat-number.text-primary= resumen ? resumen.totalEventos : (eventos ? eventos.length : 0)
+          .stat-label Eventos totales
+          .stat-subtitle Registrados en el sistema
+
+      .col-md-6.col-lg-3
+        .stat-card.success.fade-in-up
+          .stat-icon-wrapper.success
+            i.bi.bi-play-circle
+          .stat-number.text-success= resumen ? resumen.eventosActivos : 0
+          .stat-label Eventos activos
+          .stat-subtitle En planificación o ejecución
+
+      .col-md-6.col-lg-3
+        .stat-card.info.fade-in-up
+          .stat-icon-wrapper.info
+            i.bi.bi-people-fill
+          .stat-number.text-info= resumen ? resumen.totalClientes : (clientes ? clientes.length : 0)
+          .stat-label Clientes
+          .stat-subtitle Contactos corporativos
+
+      .col-md-6.col-lg-3
+        .stat-card.warning.fade-in-up
+          .stat-icon-wrapper.warning
+            i.bi.bi-person-badge
+          .stat-number.text-warning= resumen ? resumen.totalEmpleados : (empleados ? empleados.length : 0)
+          .stat-label Empleados
+          .stat-subtitle Usuarios internos
+
+    //- Contenido principal
     .row.g-4
-      each card in metricCards
-        .col-sm-6.col-xl-3
-          .card.shadow-sm.border-0.h-100
-            .card-body
-              .d-flex.justify-content-between.align-items-start
-                div
-                  h2.fw-bold.mb-0= card.value
-                  p.text-muted.mb-0= card.subtitle
-                span.badge.rounded-pill(class='bg-' + card.color)
-                  i.bi(class='bi-' + card.icon)
-              h6.text-uppercase.small.text-muted.mt-3= card.label
-
-    .row.g-4.mt-2
+      //- Eventos próximos
       .col-lg-7
-        .card.shadow-sm.border-0.h-100
-          .card-header.bg-transparent.border-0.d-flex.justify-content-between.align-items-center
-            h5.mb-0 Próximos eventos
-            a.small.text-decoration-none(href="/eventos") Ver todos
+        .dashboard-card
+          .card-header-custom
+            h5
+              i.bi.bi-calendar-check
+              | Próximos eventos
+            a.btn.btn-sm.btn-outline-primary(href="/eventos")
+              Ver todos
+              i.bi.bi-arrow-right.ms-1
           .card-body.p-0
-            if eventosProximos && eventosProximos.length
-              .table-responsive
-                table.table.align-middle.mb-0
-                  thead.table-light
-                    tr
-                      th Evento
-                      th Cliente
-                      th Inicio
-                      th Estado
-                  tbody
-                    each evento in eventosProximos
-                      tr
-                        td.fw-semibold= evento.nombre
-                        td= evento.clienteNombre
-                        td
-                          if evento.fechaInicioLabel && evento.fechaInicioLabel !== 'Sin fecha'
-                            span= evento.fechaInicioLabel
-                            br
-                            if evento.horaInicioLabel
-                              small.text-muted= evento.horaInicioLabel
-                          else
-                            span.text-muted Sin fecha
-                        td
-                          span.badge(class=evento.badgeClass)= evento.estado || 'planificacion'
+            if eventosProximos && eventosProximos.length > 0
+              each evento in eventosProximos
+                .event-item
+                  .d-flex.justify-content-between.align-items-start
+                    div.flex-grow-1
+                      h6.fw-bold.mb-1= evento.nombre
+                      .small.text-muted
+                        i.bi.bi-person.me-1
+                        = evento.clienteNombre
+                        if evento.fechaInicioLabel && evento.fechaInicioLabel !== 'Sin fecha'
+                          br
+                          i.bi.bi-calendar3.me-1
+                          = evento.fechaInicioLabel
+                          if evento.horaInicioLabel
+                            |  - 
+                            = evento.horaInicioLabel
+                    span
+                      span.badge.rounded-pill(class=evento.badgeClass)= evento.estado || 'planificacion'
             else
-              .p-4.text-center.text-muted
-                i.bi.bi-emoji-smile-upside-down.fs-3.d-block.mb-2
-                span No hay eventos próximos en agenda
+              .empty-state
+                i.bi.bi-calendar-x
+                p.mb-0 No hay eventos próximos en agenda
 
+      //- Estado de tareas
       .col-lg-5
-        .card.shadow-sm.border-0.h-100
-          .card-header.bg-transparent.border-0
-            h5.mb-0 Estado de tareas
-          .card-body
+        .dashboard-card
+          .card-header-custom
+            h5
+              i.bi.bi-list-check
+              | Estado de tareas
+          .card-body.p-3
             if totalTareas > 0
-              .mb-3
-                .d-flex.justify-content-between.align-items-center.mb-1
-                  span.small.text-muted Pendientes
-                  span.small.fw-semibold= tareasPorEstado.pendiente
-                .progress.progress-sm
-                  .progress-bar.bg-warning(style='width: ' + tareasPorEstadoPercent.pendiente + '%')
-              .mb-3
-                .d-flex.justify-content-between.align-items-center.mb-1
-                  span.small.text-muted En proceso
-                  span.small.fw-semibold= tareasPorEstado.enProceso
-                .progress.progress-sm
-                  .progress-bar.bg-info(style='width: ' + tareasPorEstadoPercent.enProceso + '%')
-              .mb-3
-                .d-flex.justify-content-between.align-items-center.mb-1
-                  span.small.text-muted Finalizadas
-                  span.small.fw-semibold= tareasPorEstado.finalizada
-                .progress.progress-sm
-                  .progress-bar.bg-success(style='width: ' + tareasPorEstadoPercent.finalizada + '%')
+              .mb-4
+                .d-flex.justify-content-between.align-items-center.mb-2
+                  span.small.text-muted
+                    i.bi.bi-clock-history.me-1
+                    | Pendientes
+                  span.fw-bold= tareasPorEstado.pendiente
+                .progress-modern
+                  .progress-bar-modern.bg-warning(style=`width: ${tareasPorEstadoPercent.pendiente}%`)
+              .mb-4
+                .d-flex.justify-content-between.align-items-center.mb-2
+                  span.small.text-muted
+                    i.bi.bi-arrow-repeat.me-1
+                    | En proceso
+                  span.fw-bold= tareasPorEstado.enProceso
+                .progress-modern
+                  .progress-bar-modern.bg-info(style=`width: ${tareasPorEstadoPercent.enProceso}%`)
+              .mb-4
+                .d-flex.justify-content-between.align-items-center.mb-2
+                  span.small.text-muted
+                    i.bi.bi-check-circle.me-1
+                    | Finalizadas
+                  span.fw-bold= tareasPorEstado.finalizada
+                .progress-modern
+                  .progress-bar-modern.bg-success(style=`width: ${tareasPorEstadoPercent.finalizada}%`)
             else
-              .p-3.text-center.text-muted
-                span No hay tareas registradas
+              .empty-state.py-4
+                i.bi.bi-inbox
+                p.mb-0 No hay tareas registradas
 
             hr
-            h6.fw-semibold.mb-3 Tareas recientes
-            if tareasRecientes && tareasRecientes.length
-              ul.list-group.list-group-flush
-                each tarea in tareasRecientes
-                  li.list-group-item.px-0
-                    .d-flex.justify-content-between.align-items-start
-                      div
-                        strong.d-block= tarea.titulo
-                        small.text-muted= tarea.fechaLabel
-                      span.badge(class=tarea.badgeClass)= tarea.estado || 'pendiente'
-            else
-              .text-muted.small No hay tareas para mostrar
 
-    .row.g-4.mt-1
-      .col-lg-6
-        .card.shadow-sm.border-0
-          .card-header.bg-transparent.border-0
-            h5.mb-0 Distribución de eventos
-          .card-body
-            if totalEstados > 0
-              each estado in distribucionEventos
-                if estado.cantidad > 0
-                  .mb-3
-                    .d-flex.justify-content-between.align-items-center.mb-1
-                      span
-                        span.badge.me-2(class=estado.badgeClass)= estado.cantidad
-                        span= estado.label
-                      span.small.text-muted= estado.porcentaje + '%'
-                    .progress.progress-sm
-                      .progress-bar(class='bg-' + estado.color, style='width: ' + estado.porcentaje + '%')
-            else
-              .text-muted No hay eventos registrados
-
-      .col-lg-6
-        .card.shadow-sm.border-0
-          .card-header.bg-transparent.border-0
-            h5.mb-0 Accesos rápidos
-          .card-body
-            .row.g-3
-              each acceso in accesosRapidos
-                .col-sm-6
-                  a.btn.w-100.border.d-flex.align-items-center.justify-content-between.py-3.px-3(class='btn-outline-' + acceso.color, href=acceso.route)
+            h6.fw-bold.mb-3
+              i.bi.bi-clock.me-1
+              | Tareas recientes
+            if tareasRecientes && tareasRecientes.length > 0
+              each tarea in tareasRecientes.slice(0, 4)
+                .task-item.py-2
+                  .d-flex.justify-content-between.align-items-start
+                    div
+                      .fw-semibold.mb-1= tarea.titulo
+                      .small.text-muted
+                        i.bi.bi-folder.me-1
+                        = tarea.area
+                        if tarea.fechaLabel
+                          br
+                          i.bi.bi-calendar3.me-1
+                          = tarea.fechaLabel
                     span
-                      i.bi(class='bi-' + acceso.icon + ' me-2')
-                      strong= acceso.label
-                    i.bi.bi-arrow-right
+                      span.badge.rounded-pill(class=tarea.badgeClass)= tarea.estado || 'pendiente'
+            else
+              .text-muted.small.text-center.py-2 No hay tareas para mostrar
+
+    .row.g-4.mt-2
+      //- Distribución de eventos
+      .col-lg-6
+        .dashboard-card
+          .card-header-custom
+            h5
+              i.bi.bi-pie-chart
+              | Distribución de eventos
+          .card-body.p-3
+            if totalEstados > 0 && distribucionEventos && distribucionEventos.length > 0
+              each estado in distribucionEventos
+                .mb-3
+                  .d-flex.justify-content-between.align-items-center.mb-2
+                    span
+                      span.badge.me-2.rounded-pill(class=estado.badgeClass)= estado.cantidad
+                      span= estado.label
+                    span.small.text-muted.fw-semibold= estado.porcentaje + '%'
+                  .progress-modern
+                    .progress-bar-modern(class=`bg-${estado.color}`, style=`width: ${estado.porcentaje}%`)
+            else
+              .empty-state.py-4
+                i.bi.bi-calendar-x
+                p.mb-0 No hay eventos registrados
+
+      //- Accesos rápidos
+      .col-lg-6
+        .dashboard-card
+          .card-header-custom
+            h5
+              i.bi.bi-lightning-charge
+              | Accesos rápidos
+          .card-body.p-3
+            .row.g-3
+              if accesosRapidos && accesosRapidos.length > 0
+                each acceso in accesosRapidos
+                  .col-sm-6
+                    a.quick-action-btn(href=acceso.route)
+                      .quick-action-icon(class=`bg-${acceso.color} text-white`)
+                        i.bi(class=`bi-${acceso.icon}`)
+                      strong.d-block= acceso.label
+              else
+                .col-sm-6
+                  a.quick-action-btn(href="/eventos/nuevo")
+                    .quick-action-icon.bg-primary.text-white
+                      i.bi.bi-calendar-plus
+                    strong.d-block Nuevo evento
+                .col-sm-6
+                  a.quick-action-btn(href="/clientes/nuevo")
+                    .quick-action-icon.bg-success.text-white
+                      i.bi.bi-person-plus
+                    strong.d-block Nuevo cliente

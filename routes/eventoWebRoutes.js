@@ -1,17 +1,16 @@
 // routes/eventoWebRoutes.js
 import express from 'express';
-import eventoWebController from '../controllers/eventoWebController.js';
+import EventoWebController from '../controllers/eventoWebController.js';
 
 const router = express.Router();
 
-router.get('/', eventoWebController.listEventosWeb);
-router.get('/nuevo', eventoWebController.showNewForm);
-router.get('/editar/:id', eventoWebController.showEditForm);
-router.get('/:id', eventoWebController.showEvento);
-
-router.post('/', eventoWebController.createEventoWeb);
-router.put('/:id', eventoWebController.updateEventoWeb);
-router.delete('/:id', eventoWebController.deleteEventoWeb);
+// Rutas para eventos
+router.get('/', EventoWebController.listarEventos);
+router.get('/nuevo', EventoWebController.mostrarFormularioCrear);
+router.post('/', EventoWebController.crearEvento);
+router.get('/editar/:id', EventoWebController.mostrarFormularioEditar);
+router.put('/:id', EventoWebController.actualizarEvento);
+router.delete('/:id', EventoWebController.eliminarEvento);
 
 export default router;
 
