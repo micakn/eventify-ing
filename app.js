@@ -102,21 +102,31 @@ if (!mongoUri) {
 }
 
 // Solo crear MongoStore si hay una URI válida
+// En Vercel, MongoStore es CRÍTICO porque las sesiones en memoria no funcionan
 if (hasValidMongoUri && trimmedUri && trimmedUri.length > 10) {
   try {
     const store = MongoStore.create({
       mongoUrl: trimmedUri,
-      ttl: 14 * 24 * 60 * 60 // 14 días
+      ttl: 14 * 24 * 60 * 60, // 14 días
+      touchAfter: 24 * 3600, // Lazy session update (1 día)
+      autoRemove: 'native', // Usar TTL nativo de MongoDB
+      stringify: false // Usar objetos nativos de MongoDB
     });
     sessionConfig.store = store;
-    if (isDev) console.log('✅ MongoStore configurado para sesiones');
+    console.log('✅ MongoStore configurado para sesiones en MongoDB');
   } catch (error) {
-    if (isDev) {
-      console.error('❌ Error al crear MongoStore:', error.message);
-      console.warn('⚠️  Continuando con sesiones en memoria');
+    console.error('❌ Error al crear MongoStore:', error.message);
+    // En Vercel, NO podemos usar sesiones en memoria - fallar explícitamente
+    if (isVercelEnv) {
+      console.error('❌ CRÍTICO: MongoStore falló en Vercel. Las sesiones NO funcionarán.');
+      console.error('💡 Verifica que MONGODB_URI esté correctamente configurada en Vercel');
+    } else {
+      console.warn('⚠️  Continuando con sesiones en memoria (solo para desarrollo local)');
     }
-    // NO asignar store - usar sesiones en memoria
   }
+} else if (isVercelEnv) {
+  // En Vercel, sin MongoStore las sesiones no funcionarán
+  console.error('❌ CRÍTICO: MONGODB_URI no está configurada. Las sesiones NO funcionarán en Vercel.');
 }
 
 app.use(session(sessionConfig));
