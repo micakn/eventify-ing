@@ -8,6 +8,10 @@
   ],
   "routes": [
     {
+      "src": "/css/(.*)",
+      "dest": "/publics/css/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "api/index.js"
     }
