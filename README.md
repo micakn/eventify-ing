@@ -61,7 +61,11 @@
    - **Contraseña:** `admin123`
    - **Rol:** Administrador
 
-   ⚠️ **Importante:** Cambia la contraseña después del primer login en producción.
+   ⚠️ **Recomendación de seguridad:**
+
+   - La contraseña `admin123` es débil y está documentada públicamente
+   - **Para desarrollo local:** Puedes usarla tal cual
+   - **Para producción:** Cambia la contraseña inmediatamente después del primer login desde el perfil del usuario (si está implementado) o directamente en la base de datos
 
 5. **Opcional: Cargar datos de prueba**
 
