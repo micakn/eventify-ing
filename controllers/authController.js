@@ -158,6 +158,8 @@ const loginAPI = asyncHandler(async (req, res) => {
 
 // -------------------- LOGOUT (Para vistas web) --------------------
 const logoutWeb = asyncHandler(async (req, res) => {
+  console.log('🔓 logoutWeb ejecutándose');
+  
   // Obtener información del usuario antes de hacer logout
   const usuarioId = req.user?.id || req.user?._id;
   const empleadoId = req.user?.empleado 
@@ -166,16 +168,10 @@ const logoutWeb = asyncHandler(async (req, res) => {
         : req.user.empleado)
     : null;
   
-  // Hacer logout de Passport
-  req.logout((err) => {
-    if (err) {
-      console.error('Error al hacer logout de Passport:', err);
-      // Continuar con la destrucción de sesión aunque falle el logout
-    }
-    
-    // Registrar auditoría de logout (antes de destruir la sesión)
-    if (usuarioId) {
-      AuditoriaModel.registrar({
+  // Registrar auditoría de logout (antes de hacer logout)
+  if (usuarioId) {
+    try {
+      await AuditoriaModel.registrar({
         accion: 'logout',
         entidad: 'Usuario',
         entidadId: String(usuarioId),
@@ -190,28 +186,47 @@ const logoutWeb = asyncHandler(async (req, res) => {
           metodo: req.method,
           url: req.originalUrl
         }
-      }).catch((error) => {
-        console.error('Error al registrar auditoría de logout:', error);
-        // No interrumpir el flujo si falla la auditoría
       });
+    } catch (error) {
+      console.error('Error al registrar auditoría de logout:', error);
+      // No interrumpir el flujo si falla la auditoría
+    }
+  }
+  
+  // Hacer logout de Passport
+  req.logout((err) => {
+    if (err) {
+      console.error('Error al hacer logout de Passport:', err);
     }
     
     // Destruir la sesión y limpiar cookies
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Error al destruir la sesión:', err);
-      }
-      
-      // Limpiar la cookie de sesión
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Error al destruir la sesión:', err);
+        }
+        
+        // Limpiar la cookie de sesión
+        res.clearCookie('connect.sid', {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production'
+        });
+        
+        console.log('✅ Logout completado, redirigiendo a /login');
+        // Redirigir al login
+        res.redirect('/login');
+      });
+    } else {
+      // Si no hay sesión, solo limpiar cookies y redirigir
       res.clearCookie('connect.sid', {
         path: '/',
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production'
       });
-      
-      // Redirigir al login
+      console.log('✅ No hay sesión, redirigiendo a /login');
       res.redirect('/login');
-    });
+    }
   });
 });
 
