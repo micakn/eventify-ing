@@ -63,7 +63,7 @@ InvitacionSchema.pre('save', async function (next) {
 
 // -------------------- ÍNDICES --------------------
 InvitacionSchema.index({ invitado: 1, evento: 1 }, { unique: true });
-InvitacionSchema.index({ enlaceUnico: 1 });
+// enlaceUnico ya tiene índice único por unique: true en la definición del campo
 InvitacionSchema.index({ evento: 1 });
 InvitacionSchema.index({ estado: 1 });
 

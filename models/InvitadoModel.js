@@ -37,9 +37,7 @@ const InvitadoSchema = new mongoose.Schema(
       default: 'pendiente'
     },
     codigoQR: {
-      type: String,
-      unique: true,
-      sparse: true
+      type: String
     },
     fechaConfirmacion: {
       type: Date
@@ -85,7 +83,7 @@ InvitadoSchema.pre('save', async function (next) {
 
 // -------------------- ÍNDICES --------------------
 InvitadoSchema.index({ email: 1, evento: 1 }, { unique: true });
-InvitadoSchema.index({ codigoQR: 1 });
+InvitadoSchema.index({ codigoQR: 1 }, { sparse: true });
 InvitadoSchema.index({ evento: 1 });
 InvitadoSchema.index({ estadoRSVP: 1 });
 

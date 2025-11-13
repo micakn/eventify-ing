@@ -8,7 +8,6 @@ const CotizacionSchema = new mongoose.Schema(
     numero: {
       type: String,
       required: true,
-      unique: true,
       trim: true
     },
     cliente: {
@@ -106,7 +105,7 @@ CotizacionSchema.pre('save', async function (next) {
 });
 
 // -------------------- ÍNDICES --------------------
-CotizacionSchema.index({ numero: 1 });
+CotizacionSchema.index({ numero: 1 }, { unique: true });
 CotizacionSchema.index({ cliente: 1 });
 CotizacionSchema.index({ evento: 1 });
 CotizacionSchema.index({ estado: 1 });
