@@ -122,19 +122,133 @@ El sistema está **completamente funcional** y listo para ser utilizado en produ
 
 ## 📊 Tabla de Contenidos
 
-1. [Introducción y Presentación del Equipo](#-introducción-y-presentación-del-equipo)
-2. [Sobre la Empresa Eventify](#-sobre-la-empresa-eventify)
-3. [Problemática Actual](#-problemática-actual)
-4. [Propuesta: ERP Eventify](#-propuesta-erp-eventify)
-5. [Beneficios del Sistema](#-beneficios-del-sistema)
-6. [Metodología de Desarrollo: SCRUM](#-metodología-de-desarrollo-scrum)
-7. [Fases del Desarrollo ERP (6 meses)](#-fases-del-desarrollo-erp-6-meses)
-8. [Herramientas Utilizadas](#-herramientas-utilizadas)
-9. [Arquitectura y Tecnologías del Sistema](#-arquitectura-y-tecnologías-del-sistema)
-10. [Accesos y Roles de Usuario](#-accesos-y-roles-de-usuario)
-11. [Cumplimiento de Requerimientos](#-cumplimiento-de-requerimientos)
-12. [Costo, Implementación y Mantenimiento](#-costo-implementación-y-mantenimiento)
-13. [Conclusión: Por qué Contratarnos](#-conclusión-por-qué-contratarnos)
+1. [Inicio Rápido - Localhost](#-inicio-rápido---localhost)
+2. [Introducción y Presentación del Equipo](#-introducción-y-presentación-del-equipo)
+3. [Sobre la Empresa Eventify](#-sobre-la-empresa-eventify)
+4. [Problemática Actual](#-problemática-actual)
+5. [Propuesta: ERP Eventify](#-propuesta-erp-eventify)
+6. [Beneficios del Sistema](#-beneficios-del-sistema)
+7. [Metodología de Desarrollo: SCRUM](#-metodología-de-desarrollo-scrum)
+8. [Fases del Desarrollo ERP (6 meses)](#-fases-del-desarrollo-erp-6-meses)
+9. [Herramientas Utilizadas](#-herramientas-utilizadas)
+10. [Arquitectura y Tecnologías del Sistema](#-arquitectura-y-tecnologías-del-sistema)
+11. [Accesos y Roles de Usuario](#-accesos-y-roles-de-usuario)
+12. [Cumplimiento de Requerimientos](#-cumplimiento-de-requerimientos)
+13. [Costo, Implementación y Mantenimiento](#-costo-implementación-y-mantenimiento)
+14. [Conclusión: Por qué Contratarnos](#-conclusión-por-qué-contratarnos)
+
+---
+
+## 🚀 Inicio Rápido - Localhost
+
+### Requisitos Previos
+
+- **Node.js** versión 18 o superior
+- **MongoDB** (local o MongoDB Atlas)
+- **npm** o **yarn**
+
+### Instalación y Configuración
+
+1. **Clonar el repositorio**
+
+   ```bash
+   git clone https://github.com/micakn/eventify-ing.git
+   cd eventify-ing
+   ```
+
+2. **Instalar dependencias**
+
+   ```bash
+   npm install
+   ```
+
+3. **Configurar variables de entorno**
+
+   Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+
+   ```env
+   # Servidor
+   PORT=3000
+   NODE_ENV=development
+
+   # Base de datos MongoDB
+   # Para MongoDB Atlas: mongodb+srv://usuario:password@cluster.mongodb.net/eventify
+   # Para MongoDB local: mongodb://localhost:27017/eventify
+   MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/eventify
+
+   **Nota:**
+
+   - Reemplaza `usuario`, `password` y `cluster.mongodb.net` con tus credenciales de MongoDB Atlas
+   - O usa `mongodb://localhost:27017/eventify` si tienes MongoDB instalado localmente
+   - **Para producción:** Genera valores seguros y aleatorios para `JWT_SECRET` y `SESSION_SECRET` usando: `openssl rand -base64 32`
+
+   ```
+
+4. **Crear usuario administrador**
+
+   ```bash
+   node scripts/createAdmin.js
+   ```
+
+   Esto creará un usuario administrador con:
+
+   - **Email:** `admin@eventify.com`
+   - **Contraseña:** `admin123`
+   - **Rol:** Administrador
+
+   ⚠️ **Recomendación de seguridad:**
+
+   - La contraseña `admin123` es débil y está documentada públicamente
+   - **Para desarrollo local:** Puedes usarla tal cual
+   - **Para producción:** Cambia la contraseña inmediatamente después del primer login desde el perfil del usuario (si está implementado) o directamente en la base de datos
+   - **Alternativa:** Modifica el script `scripts/createAdmin.js` para usar una contraseña más segura antes de ejecutarlo
+
+5. **Opcional: Cargar datos de prueba**
+
+   ```bash
+   npm run seed
+   ```
+
+   Esto creará datos de ejemplo (clientes, empleados, eventos, tareas, etc.)
+
+   - Todos los usuarios de prueba tienen la contraseña: `password123`
+   - Emails de ejemplo: `alex.lopez@eventify.com`, `maria.garcia@eventify.com`, etc.
+
+6. **Iniciar el servidor**
+
+   En modo producción:
+
+   ```bash
+   npm start
+   ```
+
+   O en modo desarrollo (con auto-restart al guardar cambios):
+
+   ```bash
+   npm run dev
+   ```
+
+   El servidor estará disponible en: `http://localhost:3000`
+
+7. **Acceder al sistema**
+
+   Abre tu navegador y ve a:
+
+   ```
+   http://localhost:3000/login
+   ```
+
+   **Credenciales por defecto:**
+
+   - **Email:** `admin@eventify.com`
+   - **Contraseña:** `admin123`
+
+### Solución de Problemas
+
+- **Error de conexión a MongoDB:** Verifica que `MONGODB_URI` esté correctamente configurada en el archivo `.env`
+- **Error al crear usuario admin:** Asegúrate de que MongoDB esté corriendo y accesible
+- **Puerto en uso:** Cambia el `PORT` en el archivo `.env` si el puerto 3000 está ocupado
+- **Dependencias faltantes:** Ejecuta `npm install` nuevamente
 
 ---
 
