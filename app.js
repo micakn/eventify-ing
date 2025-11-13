@@ -341,10 +341,27 @@ app.get('/', requireAuth, async (req, res) => {
 // -------------------- Rutas Públicas --------------------
 // Ruta de login (debe estar antes de las rutas protegidas)
 app.get('/login', (req, res) => {
-  if (req.isAuthenticated()) {
+  // Verificar autenticación de manera más estricta
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
     return res.redirect('/');
   }
   res.render('auth/login', { title: 'Login - Eventify' });
+});
+
+// Ruta para forzar logout (útil para limpiar sesiones)
+app.get('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.error('Error al cerrar sesión:', err);
+    }
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error al destruir sesión:', err);
+      }
+      res.clearCookie('connect.sid');
+      res.redirect('/login');
+    });
+  });
 });
 
 // Autenticación (login/logout) - debe estar antes de requireAuth

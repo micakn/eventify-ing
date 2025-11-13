@@ -28,9 +28,14 @@ export const authenticateSession = (req, res, next) => {
 
 // -------------------- MIDDLEWARE: Verificar sesión activa (para rutas web) --------------------
 export const requireAuth = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
+  // Verificar si hay una sesión activa
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    // Verificar que el usuario existe y está activo
+    if (req.user && req.user.activo !== false) {
+      return next();
+    }
   }
+  // Si no está autenticado, redirigir al login
   res.redirect('/login');
 };
 
