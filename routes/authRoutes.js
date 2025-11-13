@@ -68,6 +68,8 @@ router.post('/login', (req, res, next) => {
   console.log('🔐 POST /auth/login recibido');
   next();
 }, validateLoginWeb, authController.loginWeb);
+// Logout: acepta tanto GET (desde enlaces) como POST (desde formularios)
+router.get('/logout', requireAuth, authController.logoutWeb);
 router.post('/logout', requireAuth, authController.logoutWeb);
 
 // -------------------- RUTAS API (JWT) --------------------

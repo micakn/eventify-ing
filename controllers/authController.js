@@ -158,47 +158,58 @@ const loginAPI = asyncHandler(async (req, res) => {
 
 // -------------------- LOGOUT (Para vistas web) --------------------
 const logoutWeb = asyncHandler(async (req, res) => {
+  // Obtener información del usuario antes de hacer logout
   const usuarioId = req.user?.id || req.user?._id;
-  const empleadoId = req.user?.empleado?.id || req.user?.empleado?._id || null;
+  const empleadoId = req.user?.empleado 
+    ? (typeof req.user.empleado === 'object' 
+        ? (req.user.empleado.id || req.user.empleado._id)
+        : req.user.empleado)
+    : null;
   
-  req.logout(async (err) => {
+  // Hacer logout de Passport
+  req.logout((err) => {
     if (err) {
-      return res.status(500).render('error', {
-        title: 'Error',
-        message: 'Error al cerrar sesión'
+      console.error('Error al hacer logout de Passport:', err);
+      // Continuar con la destrucción de sesión aunque falle el logout
+    }
+    
+    // Registrar auditoría de logout (antes de destruir la sesión)
+    if (usuarioId) {
+      AuditoriaModel.registrar({
+        accion: 'logout',
+        entidad: 'Usuario',
+        entidadId: String(usuarioId),
+        usuario: usuarioId,
+        empleado: empleadoId,
+        ip: req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || req.headers['x-forwarded-for'] || '',
+        userAgent: req.get('user-agent') || '',
+        fecha: new Date(),
+        resultado: 'success',
+        mensaje: 'Logout exitoso',
+        metadata: {
+          metodo: req.method,
+          url: req.originalUrl
+        }
+      }).catch((error) => {
+        console.error('Error al registrar auditoría de logout:', error);
+        // No interrumpir el flujo si falla la auditoría
       });
     }
     
-    // Registrar auditoría de logout
-    if (usuarioId) {
-      try {
-        await AuditoriaModel.registrar({
-          accion: 'logout',
-          entidad: 'Usuario',
-          entidadId: usuarioId,
-          usuario: usuarioId,
-          empleado: empleadoId,
-          ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || '',
-          userAgent: req.get('user-agent') || '',
-          fecha: new Date(),
-          resultado: 'success',
-          mensaje: 'Logout exitoso',
-          metadata: {
-            metodo: req.method,
-            url: req.originalUrl
-          }
-        });
-      } catch (error) {
-        console.error('Error al registrar auditoría de logout:', error);
-        // No interrumpir el flujo si falla la auditoría
-      }
-    }
-    
+    // Destruir la sesión y limpiar cookies
     req.session.destroy((err) => {
       if (err) {
         console.error('Error al destruir la sesión:', err);
       }
-      res.clearCookie('connect.sid');
+      
+      // Limpiar la cookie de sesión
+      res.clearCookie('connect.sid', {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production'
+      });
+      
+      // Redirigir al login
       res.redirect('/login');
     });
   });
